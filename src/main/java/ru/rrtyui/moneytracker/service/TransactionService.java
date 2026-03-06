@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.rrtyui.moneytracker.dto.TransactionRequest;
 import ru.rrtyui.moneytracker.dto.TransactionResponse;
+import ru.rrtyui.moneytracker.exception.TransactionException;
+import ru.rrtyui.moneytracker.mapper.TransactionMapper;
 import ru.rrtyui.moneytracker.model.Category;
 import ru.rrtyui.moneytracker.model.Transaction;
 import ru.rrtyui.moneytracker.repository.CategoryRepository;
@@ -18,16 +20,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
-@Slf4j
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final CategoryRepository categoryRepository;
 
-    //TODO logger + mapper + кастомные исключения
     public TransactionResponse createTransaction(TransactionRequest request) {
 
         Long categoryId = request.getCategoryId();
@@ -35,20 +36,17 @@ public class TransactionService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> {
                     log.warn("Category with ID {} not found", categoryId);
-                    return new RuntimeException("Категория с ID %d не найдена".formatted(categoryId));
+                    return new TransactionException("Категория с ID %d не найдена".formatted(categoryId));
                 });
 
-        Transaction transaction = new Transaction();
-        transaction.setAmount(request.getAmount());
-        transaction.setDate(request.getDate() != null ? request.getDate() : LocalDateTime.now());
-        transaction.setDescription(request.getDescription());
+        Transaction transaction = TransactionMapper.toTransaction(request);
         transaction.setCategory(category);
 
         log.info("Saving transaction with ID {}", transaction.getId());
         Transaction saved = transactionRepository.save(transaction);
         log.info("Saved transaction with ID {}", transaction.getId());
 
-        return TransactionResponse.fromEntity(saved);
+        return TransactionMapper.toTransactionResponse(saved);
     }
 
     public List<TransactionResponse> getAllTransactions(LocalDateTime from, LocalDateTime to, Long categoryId) {
@@ -69,7 +67,7 @@ public class TransactionService {
         Specification<Transaction> specification = Specification.allOf(specs);
 
         return transactionRepository.findAll(specification).stream()
-                .map(TransactionResponse::fromEntity)
+                .map(TransactionMapper::toTransactionResponse)
                 .collect(Collectors.toList());
     }
 
