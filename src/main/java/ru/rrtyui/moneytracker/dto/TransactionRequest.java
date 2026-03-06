@@ -1,16 +1,18 @@
 package ru.rrtyui.moneytracker.dto;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
 public class TransactionRequest {
-
     private BigDecimal amount;
     private LocalDateTime date;
     private String description;
     private Long categoryId;
-
 }
