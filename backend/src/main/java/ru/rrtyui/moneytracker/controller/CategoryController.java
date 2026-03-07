@@ -54,4 +54,9 @@ public class CategoryController {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/leaves")
+    public ResponseEntity<List<CategoryResponse>> getLeafCategories() {
+        return ResponseEntity.ok(categoryService.getAllLeafCategories());
+    }
 }

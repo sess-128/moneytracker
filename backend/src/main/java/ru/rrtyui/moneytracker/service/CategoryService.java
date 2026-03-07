@@ -42,6 +42,15 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
+    public List<CategoryResponse> getAllLeafCategories() {
+        // ОДИН ЗАПРОС К БАЗЕ! Никаких циклов.
+        List<Category> leafCategories = categoryRepository.findAllLeafCategories();
+
+        return leafCategories.stream()
+                .map(cat -> CategoryMapper.toCategoryResponse(cat, false))
+                .collect(Collectors.toList());
+    }
+
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryValidationException("Категория с ID " + id + " не найдена"));
