@@ -39,7 +39,7 @@ public class TransactionService {
                     return new TransactionException("Категория с ID %d не найдена".formatted(categoryId));
                 });
 
-        Transaction transaction = TransactionMapper.toTransaction(request);
+        Transaction transaction = TransactionMapper.toTransaction(request, category);
         transaction.setCategory(category);
 
         log.info("Saving transaction with ID {}", transaction.getId());
