@@ -3,7 +3,6 @@ package ru.rrtyui.moneytracker.config;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 import ru.rrtyui.moneytracker.model.Category;
 import ru.rrtyui.moneytracker.model.CategoryType;
 import ru.rrtyui.moneytracker.repository.CategoryRepository;

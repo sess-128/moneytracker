@@ -34,4 +34,23 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             "WHERE c.parent IS NULL " +
             "GROUP BY c.id, c.name, c.parent.id")
     List<CategoryItemDto> findRootCategoryItems();
+
+    @Query("SELECT COUNT(c) > 0 FROM Category c WHERE c.name = :name " +
+            "AND ((c.parent.id = :parentId) OR (c.parent IS NULL AND :parentId IS NULL)) " +
+            "AND c.id <> :excludeId")
+    boolean existsByNameAndParentId(@Param("name") String name,
+                                    @Param("parentId") Long parentId,
+                                    @Param("excludeId") Long excludeId);
+
+    @Query(value = """
+        WITH RECURSIVE category_tree AS (
+            SELECT id, parent_id FROM categories WHERE id = :candidateChildId
+            UNION ALL
+            SELECT c.id, c.parent_id FROM categories c
+            INNER JOIN category_tree ct ON c.id = ct.parent_id
+        )
+        SELECT COUNT(*) FROM category_tree WHERE id = :potentialParentId
+        """, nativeQuery = true)
+    long countCyclePath(@Param("potentialParentId") Long potentialParentId,
+                        @Param("candidateChildId") Long candidateChildId);
 }
