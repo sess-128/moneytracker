@@ -53,4 +53,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
         """, nativeQuery = true)
     long countCyclePath(@Param("potentialParentId") Long potentialParentId,
                         @Param("candidateChildId") Long candidateChildId);
+
+    @Query("SELECT c FROM Category c WHERE NOT EXISTS (SELECT 1 FROM Category child WHERE child.parent = c)")
+    List<Category> findAllLeafCategories();
 }
