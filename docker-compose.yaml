@@ -1,21 +1,58 @@
 services:
+
   db:
-    image: postgres:15
-    container_name: postgres-db
+    image: postgres:15-alpine
+    container_name: mt-db
     restart: always
     environment:
+      POSTGRES_DB: moneytracker
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: moneytracker
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U user -d mydatabase" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    networks:
+      - mt-network
+
+  backend:
+    build: ./backend
+    container_name: mt-backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/moneytracker
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+    depends_on:
+      - db
+    networks:
+      - mt-network
+
+  frontend:
+    build: ./frontend
+    container_name: mt-frontend
+    restart: always
+    ports:
+      - "3000:5173"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+      - ./frontend/index.html:/app/index.html
+    environment:
+      VITE_API_URL: http://localhost:8080
+    depends_on:
+      - backend
+    networks:
+      - mt-network
+
+networks:
+  mt-network:
+    driver: bridge
 
 volumes:
   pgdata:
