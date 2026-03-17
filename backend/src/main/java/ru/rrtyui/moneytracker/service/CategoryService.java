@@ -1,6 +1,7 @@
 package ru.rrtyui.moneytracker.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.rrtyui.moneytracker.dto.CategoryItemDto;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
@@ -29,12 +31,14 @@ public class CategoryService {
     private final CategoryValidator categoryValidator;
 
     public List<CategoryResponse> getRootCategories() {
+        log.info("Получаем все рутовые категории");
         return categoryRepository.findRootCategoryItems().stream()
                 .map(CategoryMapper::toCategoryResponse)
                 .collect(Collectors.toList());
     }
 
     public List<CategoryResponse> getChildCategories(Long parentId) {
+        log.info("Получаем дочерние категории, у которых родитель с ID = {}", parentId);
         List<CategoryItemDto> itemsByParentId = categoryRepository.findCategoryItemsByParentId(parentId);
 
         return itemsByParentId.stream()
@@ -43,7 +47,7 @@ public class CategoryService {
     }
 
     public List<CategoryResponse> getAllLeafCategories() {
-        // ОДИН ЗАПРОС К БАЗЕ! Никаких циклов.
+        log.info("Получаем все дочерние категории");
         List<Category> leafCategories = categoryRepository.findAllLeafCategories();
 
         return leafCategories.stream()
@@ -52,12 +56,14 @@ public class CategoryService {
     }
 
     public Category getCategoryById(Long id) {
+        log.info("Получаем категорию, у которой ID = {}", id);
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryValidationException("Категория с ID " + id + " не найдена"));
     }
 
     @Transactional
     public CategoryResponse createCategory(CreateCategoryRequest request) {
+        log.info("Запрос на создание категории: {}", request);
         categoryValidator.validateUniqueness(request.getName(), request.getParentId(), null);
 
         Category parent = fetchParentIfExists(request.getParentId());
@@ -70,6 +76,7 @@ public class CategoryService {
 
     @Transactional
     public CategoryResponse updateCategory(Long id, UpdateCategoryRequest request) {
+        log.info("Обновление категории с ID = {}, {}", id, request);
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
 
@@ -97,6 +104,7 @@ public class CategoryService {
 
     @Transactional
     public void deleteCategory(Long id) {
+        log.info("Удаляем категорию с ID = {}", id);
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
 

@@ -19,16 +19,4 @@ public class TransactionResponse {
     private String description;
     private Long categoryId;
     private String categoryName;
-
-    //TODO сделать нормальный маппер
-    public static TransactionResponse fromEntity(Transaction transaction) {
-        return new TransactionResponse(
-                transaction.getId(),
-                transaction.getAmount(),
-                transaction.getDate(),
-                transaction.getDescription(),
-                transaction.getCategory().getId(),
-                transaction.getCategory().getName()
-        );
-    }
 }

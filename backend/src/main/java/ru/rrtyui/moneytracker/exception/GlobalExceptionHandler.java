@@ -27,7 +27,6 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 
-    // Перехват ошибок уникальности от БД (если пропустили проверку в Java)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, Object>> handleDbConstraint(DataIntegrityViolationException ex) {
         String msg = "Нарушение целостности данных. Возможно, категория с таким именем уже существует.";
