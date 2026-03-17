@@ -14,8 +14,8 @@ import java.util.List;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     List<Category> findByParentIsNull();
-    boolean existsByParentId(Long parentId);
     List<Category> findByType(CategoryType type);
+    boolean existsByParentId(Long parentId);
 
     @Query("SELECT new ru.rrtyui.moneytracker.dto.CategoryItemDto(" +
             "c.id, c.name, c.parent.id, " +
@@ -32,7 +32,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             "FROM Category c " +
             "LEFT JOIN Category c2 ON c2.parent = c " +
             "WHERE c.parent IS NULL " +
-            "GROUP BY c.id, c.name, c.parent.id")
+            "GROUP BY c.id, c.name")
     List<CategoryItemDto> findRootCategoryItems();
 
     @Query("SELECT COUNT(c) > 0 FROM Category c WHERE c.name = :name " +

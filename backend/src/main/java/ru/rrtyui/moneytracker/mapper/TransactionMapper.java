@@ -34,7 +34,7 @@ public class TransactionMapper {
         transaction.setAmount(request.getAmount());
         transaction.setDate(request.getDate() != null ? request.getDate() : LocalDateTime.now());
         transaction.setDescription(request.getDescription());
-        transaction.setCategory(category); // Категория передается извне, так как её нужно достать из БД
+        transaction.setCategory(category);
 
         return transaction;
     }
