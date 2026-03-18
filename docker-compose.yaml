@@ -1,5 +1,4 @@
 services:
-
   db:
     image: postgres:15-alpine
     container_name: mt-db
@@ -33,18 +32,17 @@ services:
       - mt-network
 
   frontend:
-    build: ./frontend
+    image: node:20-alpine  # Обновил до 20 версии для совместимости с новыми реакт-роутерами
     container_name: mt-frontend
-    restart: always
-    ports:
-      - "3000:5173"
+    working_dir: /app
     volumes:
-      - ./frontend/src:/app/src
-      - ./frontend/public:/app/public
-      - ./frontend/vite.config.ts:/app/vite.config.ts
-      - ./frontend/index.html:/app/index.html
+      - ./frontend:/app
+      - /app/node_modules  # Хак: чтобы не перезатирать node_modules из хоста
+    ports:
+      - "3000:3000"        # CRA использует порт 3000
     environment:
-      VITE_API_URL: http://localhost:8080
+      REACT_APP_API_URL: http://localhost:8080/api  # Важно: префикс REACT_APP_
+    command: sh -c "npm install && npm start"   # Команда для CRA
     depends_on:
       - backend
     networks:
