@@ -8,12 +8,13 @@ import { transactionApi, categoryApi } from '../services/api';
 
 interface TransactionFormProps {
     onSuccess?: () => void;
+    onNotify?: (msg: string, type: any) => void; // Новый проп
 }
 
-const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess }) => {
+const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, onNotify }) => {
     const [formData, setFormData] = useState<Partial<Transaction>>({
-        amount: 0,
-        categoryId: undefined,  // ← ЧИСЛО
+        amount: undefined,
+        categoryId: undefined,
         description: '',
         date: new Date().toISOString().split('T')[0],
         type: 'expense'
@@ -66,20 +67,35 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess }) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!formData.categoryId) {
-            alert('Выберите подкатегорию!');
+
+        if (!formData.categoryId || !formData.amount) {
+            // Вместо alert:
+            if (onNotify) onNotify('Заполните сумму и выберите категорию!', 'warning');
             return;
         }
+
         try {
             await transactionApi.create(formData);
-            alert('Транзакция добавлена!');
-            setFormData({ amount: 0, categoryId: undefined, description: '', date: new Date().toISOString().split('T')[0], type: 'expense' });
+
+            // Вместо alert('Транзакция добавлена!'):
+            if (onNotify) onNotify('Транзакция успешно добавлена!', 'success');
+
+            setFormData({
+                amount: undefined,
+                categoryId: undefined,
+                description: '',
+                date: new Date().toISOString().split('T')[0],
+                type: 'expense'
+            });
             setSelectedParentId('');
             setChildCategories([]);
+
             if (onSuccess) onSuccess();
         } catch (error: any) {
             console.error(error);
-            alert(error.response?.data?.message || 'Ошибка');
+            // Вместо alert об ошибке:
+            const msg = error.response?.data?.message || 'Ошибка при добавлении транзакции';
+            if (onNotify) onNotify(msg, 'error');
         }
     };
 
@@ -95,13 +111,19 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess }) => {
                     </Select>
                 </FormControl>
 
-                <TextField fullWidth margin="normal" label="Сумма" name="amount" type="number" value={formData.amount} onChange={handleChange} required />
+                <TextField
+                    fullWidth margin="normal" label="Сумма" name="amount" type="number"
+                    value={formData.amount || ''} onChange={handleChange}
+                    placeholder="0" required
+                />
 
                 <FormControl fullWidth margin="normal" disabled={loadingParents}>
                     <InputLabel>Группа</InputLabel>
                     <Select value={selectedParentId} label="Группа" onChange={handleParentChange}>
                         <MenuItem value=""><em>-- Выберите группу --</em></MenuItem>
-                        {parentCategories.map(cat => <MenuItem key={cat.id} value={cat.id}>{cat.name}</MenuItem>)}
+                        {parentCategories.map(cat => (
+                            <MenuItem key={cat.id} value={cat.id}>{cat.name}</MenuItem>
+                        ))}
                     </Select>
                     {loadingParents && <CircularProgress size={20} sx={{ position: 'absolute', right: 10, bottom: 10 }} />}
                 </FormControl>
@@ -109,16 +131,29 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess }) => {
                 <FormControl fullWidth margin="normal" disabled={!selectedParentId || loadingChildren}>
                     <InputLabel>Категория</InputLabel>
                     <Select name="categoryId" value={formData.categoryId || ''} label="Категория" onChange={handleChange} required>
-                        <MenuItem value="">{!selectedParentId ? 'Сначала выберите группу' : '-- Выберите категорию --'}</MenuItem>
-                        {childCategories.map(cat => <MenuItem key={cat.id} value={cat.id}>{cat.name}</MenuItem>)}
+                        <MenuItem value="">
+                            {!selectedParentId ? 'Сначала выберите группу' : '-- Выберите категорию --'}
+                        </MenuItem>
+                        {childCategories.map(cat => (
+                            <MenuItem key={cat.id} value={cat.id}>{cat.name}</MenuItem>
+                        ))}
                     </Select>
                     {loadingChildren && <CircularProgress size={20} sx={{ position: 'absolute', right: 10, bottom: 10 }} />}
                 </FormControl>
 
-                <TextField fullWidth margin="normal" label="Описание" name="description" value={formData.description} onChange={handleChange} multiline rows={2} />
-                <TextField fullWidth margin="normal" label="Дата" name="date" type="date" value={formData.date} onChange={handleChange} required InputLabelProps={{ shrink: true }} />
+                <TextField
+                    fullWidth margin="normal" label="Описание" name="description"
+                    value={formData.description} onChange={handleChange} multiline rows={2}
+                />
 
-                <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }} disabled={!formData.categoryId}>
+                <TextField
+                    fullWidth margin="normal" label="Дата" name="date" type="date"
+                    value={formData.date} onChange={handleChange} required
+                    InputLabelProps={{ shrink: true }}
+                />
+
+                <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}
+                        disabled={!formData.categoryId || !formData.amount}>
                     Добавить
                 </Button>
             </Box>

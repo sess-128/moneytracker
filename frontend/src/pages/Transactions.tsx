@@ -8,7 +8,7 @@ const Transactions: React.FC = () => {
             <Typography variant="h4" gutterBottom>
                 Все транзакции
             </Typography>
-            <TransactionList />
+            <TransactionList refreshKey={0} />
         </Container>
     );
 };

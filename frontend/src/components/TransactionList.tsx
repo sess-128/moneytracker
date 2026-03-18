@@ -1,27 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    IconButton,
-    Typography
+    Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+    Paper, IconButton, Typography
 } from '@mui/material';
+// ❌ УБРАЛИ отсюда Snackbar и Alert, они будут в Dashboard
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Transaction } from '../types';
 import { transactionApi } from '../services/api';
 
-const TransactionList: React.FC = () => {
+interface TransactionListProps {
+    refreshKey: number;
+    // ✅ Добавили проп для уведомления родителя
+    onNotify?: (msg: string, type: 'success' | 'error' | 'info' | 'warning') => void;
+}
+
+const TransactionList: React.FC<TransactionListProps> = ({ refreshKey, onNotify }) => {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        fetchTransactions();
-    }, []);
 
     const fetchTransactions = async () => {
         try {
@@ -34,13 +30,28 @@ const TransactionList: React.FC = () => {
         }
     };
 
+    // Обновляем список при монтировании И при изменении refreshKey
+    useEffect(() => {
+        fetchTransactions();
+    }, [refreshKey]);
+
     const handleDelete = async (id: number) => {
         if (window.confirm('Удалить эту транзакцию?')) {
             try {
                 await transactionApi.delete(id);
+
+                // ✅ СООБЩАЕМ РОДИТЕЛЮ ОБ УСПЕХЕ
+                if (onNotify) {
+                    onNotify('Транзакция удалена', 'success');
+                }
+
                 fetchTransactions();
             } catch (error) {
                 console.error('Error deleting transaction:', error);
+                // ✅ СООБЩАЕМ РОДИТЕЛЮ ОБ ОШИБКЕ
+                if (onNotify) {
+                    onNotify('Ошибка при удалении', 'error');
+                }
             }
         }
     };
@@ -69,9 +80,7 @@ const TransactionList: React.FC = () => {
                                     {transaction.type === 'income' ? 'Доход' : 'Расход'}
                                 </Typography>
                             </TableCell>
-                            <TableCell>
-                                {transaction.categoryName || `ID: ${transaction.categoryId}`}
-                            </TableCell>
+                            <TableCell>{transaction.categoryName || `ID: ${transaction.categoryId}`}</TableCell>
                             <TableCell>{transaction.description}</TableCell>
                             <TableCell align="right">
                                 <Typography color={transaction.type === 'income' ? 'green' : 'red'}>
@@ -79,9 +88,7 @@ const TransactionList: React.FC = () => {
                                 </Typography>
                             </TableCell>
                             <TableCell align="center">
-                                <IconButton color="primary" size="small">
-                                    <EditIcon />
-                                </IconButton>
+                                <IconButton color="primary" size="small"><EditIcon /></IconButton>
                                 <IconButton
                                     color="error"
                                     size="small"
