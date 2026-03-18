@@ -32,7 +32,7 @@ public class TransactionMapper {
 
         Transaction transaction = new Transaction();
         transaction.setAmount(request.getAmount());
-        transaction.setDate(request.getDate() != null ? request.getDate() : LocalDateTime.now());
+        transaction.setDate(request.getDate() != null ? request.getDate().atStartOfDay() : LocalDateTime.now());
         transaction.setDescription(request.getDescription());
         transaction.setCategory(category);
 

@@ -5,14 +5,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
 @AllArgsConstructor
 public class TransactionRequest {
     private BigDecimal amount;
-    private LocalDateTime date;
+    private LocalDate date;
     private String description;
     private Long categoryId;
 }
