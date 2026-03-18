@@ -18,7 +18,10 @@ const Header: React.FC = () => {
                         Dashboard
                     </Button>
                     <Button color="inherit" component={Link} to="/transactions">
-                        Transactions
+                        Транзакции
+                    </Button>
+                    <Button color="inherit" component={Link} to="/categories">
+                        Категории
                     </Button>
                 </Toolbar>
             </AppBar>

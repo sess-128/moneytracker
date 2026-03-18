@@ -5,7 +5,7 @@ export interface Transaction {
     categoryName?: string;
     description: string;
     date: string;
-    type: 'income' | 'expense';
+    type: 'INCOME' | 'EXPENSE';
 }
 
 export interface Category {
@@ -13,5 +13,5 @@ export interface Category {
     name: string;
     parentId?: number | null;
     hasChildren?: boolean;
-    type: 'income' | 'expense';
+    type: 'INCOME' | 'EXPENSE';
 }

@@ -59,4 +59,9 @@ public class CategoryController {
     public ResponseEntity<List<CategoryResponse>> getLeafCategories() {
         return ResponseEntity.ok(categoryService.getAllLeafCategories());
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
+        return ResponseEntity.ok(categoryService.getAllCategories());
+    }
 }
