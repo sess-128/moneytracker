@@ -8,16 +8,16 @@ import { transactionApi, categoryApi } from '../services/api';
 
 interface TransactionFormProps {
     onSuccess?: () => void;
-    onNotify?: (msg: string, type: any) => void; // Новый проп
+    onNotify?: (message: string, severity: 'success' | 'error' | 'info' | 'warning') => void; // <-- ДОБАВИТЬ ЭТУ СТРОКУ
 }
 
-const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, onNotify }) => {
+const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, onNotify }) => { // <-- Добавить onNotify в деструктуризацию
     const [formData, setFormData] = useState<Partial<Transaction>>({
         amount: undefined,
         categoryId: undefined,
         description: '',
         date: new Date().toISOString().split('T')[0],
-        type: 'expense'
+        type: 'EXPENSE'
     });
 
     const [parentCategories, setParentCategories] = useState<Category[]>([]);
@@ -69,33 +69,47 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, onNotify }
         e.preventDefault();
 
         if (!formData.categoryId || !formData.amount) {
-            // Вместо alert:
-            if (onNotify) onNotify('Заполните сумму и выберите категорию!', 'warning');
+            // ЗАМЕНИТЬ alert НА onNotify
+            if (onNotify) {
+                onNotify('Заполните сумму и выберите категорию!', 'warning');
+            } else {
+                alert('Заполните сумму и выберите категорию!');
+            }
             return;
         }
 
         try {
             await transactionApi.create(formData);
 
-            // Вместо alert('Транзакция добавлена!'):
-            if (onNotify) onNotify('Транзакция успешно добавлена!', 'success');
+            // ЗАМЕНИТЬ alert НА onNotify
+            if (onNotify) {
+                onNotify('Транзакция успешно добавлена!', 'success');
+            } else {
+                alert('Транзакция добавлена!');
+            }
 
+            // Сброс формы
             setFormData({
                 amount: undefined,
                 categoryId: undefined,
                 description: '',
                 date: new Date().toISOString().split('T')[0],
-                type: 'expense'
+                type: formData.type
             });
+
             setSelectedParentId('');
             setChildCategories([]);
 
             if (onSuccess) onSuccess();
         } catch (error: any) {
             console.error(error);
-            // Вместо alert об ошибке:
             const msg = error.response?.data?.message || 'Ошибка при добавлении транзакции';
-            if (onNotify) onNotify(msg, 'error');
+            // ЗАМЕНИТЬ alert НА onNotify
+            if (onNotify) {
+                onNotify(msg, 'error');
+            } else {
+                alert(msg);
+            }
         }
     };
 
@@ -103,11 +117,18 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, onNotify }
         <Paper elevation={3} sx={{ p: 3, maxWidth: 500, mx: 'auto', mt: 3 }}>
             <Typography variant="h6" gutterBottom>Новая транзакция</Typography>
             <Box component="form" onSubmit={handleSubmit}>
+
+                {/* Тип операции */}
                 <FormControl fullWidth margin="normal">
                     <InputLabel>Тип</InputLabel>
-                    <Select name="type" value={formData.type} label="Тип" onChange={handleChange}>
-                        <MenuItem value="income">Доход</MenuItem>
-                        <MenuItem value="expense">Расход</MenuItem>
+                    <Select
+                        name="type"
+                        value={formData.type}
+                        label="Тип"
+                        onChange={handleChange}
+                    >
+                        <MenuItem value="EXPENSE">Расход</MenuItem>
+                        <MenuItem value="INCOME">Доход</MenuItem>
                     </Select>
                 </FormControl>
 
@@ -130,7 +151,13 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, onNotify }
 
                 <FormControl fullWidth margin="normal" disabled={!selectedParentId || loadingChildren}>
                     <InputLabel>Категория</InputLabel>
-                    <Select name="categoryId" value={formData.categoryId || ''} label="Категория" onChange={handleChange} required>
+                    <Select
+                        name="categoryId"
+                        value={formData.categoryId || ''}
+                        label="Категория"
+                        onChange={handleChange}
+                        required
+                    >
                         <MenuItem value="">
                             {!selectedParentId ? 'Сначала выберите группу' : '-- Выберите категорию --'}
                         </MenuItem>
@@ -152,8 +179,14 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, onNotify }
                     InputLabelProps={{ shrink: true }}
                 />
 
-                <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}
-                        disabled={!formData.categoryId || !formData.amount}>
+                <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    sx={{ mt: 2 }}
+                    disabled={!formData.categoryId || !formData.amount}
+                >
                     Добавить
                 </Button>
             </Box>

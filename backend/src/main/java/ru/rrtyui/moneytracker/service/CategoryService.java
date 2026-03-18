@@ -127,4 +127,14 @@ public class CategoryService {
         return categoryRepository.findById(parentId)
                 .orElseThrow(() -> new CategoryNotFoundException(parentId));
     }
+
+    public List<CategoryResponse> getAllCategories() {
+        log.info("Получаем ВСЕ категории (плоский список)");
+        return categoryRepository.findAllSorted().stream()
+                .map(cat -> {
+                    boolean hasChildren = categoryRepository.existsByParentId(cat.getId());
+                    return CategoryMapper.toCategoryResponse(cat, hasChildren);
+                })
+                .collect(Collectors.toList());
+    }
 }

@@ -56,4 +56,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query("SELECT c FROM Category c WHERE NOT EXISTS (SELECT 1 FROM Category child WHERE child.parent = c)")
     List<Category> findAllLeafCategories();
+
+    @Query("SELECT c FROM Category c ORDER BY c.type, c.name")
+    List<Category> findAllSorted();
 }
