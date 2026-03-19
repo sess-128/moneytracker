@@ -3,7 +3,6 @@ package ru.rrtyui.moneytracker.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import ru.rrtyui.moneytracker.model.Transaction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

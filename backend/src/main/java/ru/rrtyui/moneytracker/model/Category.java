@@ -43,7 +43,7 @@ public class Category {
     @Column(nullable = false)
     private CategoryType type;
 
-    public Category (String name, Category parent, CategoryType type) {
+    public Category(String name, Category parent, CategoryType type) {
         this.name = name;
         this.parent = parent;
         this.type = type;

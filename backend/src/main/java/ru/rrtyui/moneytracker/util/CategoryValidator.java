@@ -31,18 +31,14 @@ public class CategoryValidator {
      * 2. Нельзя создать циклическую зависимость (сделать потомка родителем).
      */
     public void validateParentChange(Category category, Long newParentId) {
-        // Если родитель не меняется или становится null (корневая категория) - проверка не нужна
         if (newParentId == null) {
             return;
         }
 
-        // Проверка 1: Сам на себя
         if (Objects.equals(category.getId(), newParentId)) {
             throw new CategoryValidationException("Категория не может быть своим собственным родителем");
         }
 
-        // Проверка 2: Цикл (является ли новый родитель потомком текущей категории)
-        // Если мы идем вверх от category и встречаем newParentId -> цикл!
         if (hasCycle(newParentId, category.getId())) {
             throw new CategoryValidationException(
                     "Невозможно установить родителя: будет нарушена иерархия (циклическая зависимость)"
