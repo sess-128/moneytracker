@@ -27,7 +27,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Transaction {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,20 +41,20 @@ public class Transaction {
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", nullable = false) // Важно: категория обязательна
     private Category category;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TransactionType type;
 
     private String description;
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        if (this.type == null) {
-            this.type = TransactionType.EXPENSE;
-        }
+    }
+
+    // Хелпер метод для получения типа транзакции на основе категории
+    public String getType() {
+        return (this.category != null && this.category.getType() != null)
+                ? this.category.getType().name()
+                : "EXPENSE";
     }
 }

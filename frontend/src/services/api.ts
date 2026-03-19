@@ -16,9 +16,9 @@ export const transactionApi = {
 
 export const categoryApi = {
     getAll: () => api.get<Category[]>('/categories/all'),
+
     getRoot: () => api.get<Category[]>('/categories'),
     getByParent: (parentId: number) => api.get<Category[]>(`/categories/${parentId}/children`),
-
     create: (data: any) => api.post('/categories', data),
     update: (id: number, data: any) => api.put(`/categories/${id}`, data),
     delete: (id: number) => api.delete(`/categories/${id}`),

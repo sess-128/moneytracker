@@ -130,11 +130,11 @@ public class CategoryService {
 
     public List<CategoryResponse> getAllCategories() {
         log.info("Получаем ВСЕ категории (плоский список)");
-        return categoryRepository.findAllSorted().stream()
-                .map(cat -> {
-                    boolean hasChildren = categoryRepository.existsByParentId(cat.getId());
-                    return CategoryMapper.toCategoryResponse(cat, hasChildren);
-                })
+
+        List<CategoryItemDto> dtos = categoryRepository.findAllWithHasChildren();
+
+        return dtos.stream()
+                .map(CategoryMapper::toCategoryResponse)
                 .collect(Collectors.toList());
     }
 }
