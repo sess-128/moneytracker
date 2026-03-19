@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="2026-03-20-01" author="andrew">
+        <comment>Create categories table</comment>
+
+        <createTable tableName="categories">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parent_id" type="bigint"/>
+            <column name="type" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="categories"
+                baseColumnNames="parent_id"
+                referencedTableName="categories"
+                referencedColumnNames="id"
+                constraintName="fk_categories_parent"
+                onDelete="CASCADE"/>
+
+        <addUniqueConstraint
+                tableName="categories"
+                columnNames="name, parent_id"
+                constraintName="uk_categories_name_parent"/>
+
+        <createIndex
+                tableName="categories"
+                indexName="idx_categories_parent_id">
+            <column name="parent_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
