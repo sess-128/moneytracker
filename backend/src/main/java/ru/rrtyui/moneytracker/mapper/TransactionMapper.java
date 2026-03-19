@@ -6,6 +6,8 @@ import ru.rrtyui.moneytracker.dto.TransactionResponse;
 import ru.rrtyui.moneytracker.model.Category;
 import ru.rrtyui.moneytracker.model.Transaction;
 
+import java.time.LocalDateTime;
+
 @UtilityClass
 public class TransactionMapper {
 
@@ -16,7 +18,9 @@ public class TransactionMapper {
 
         Transaction transaction = new Transaction();
         transaction.setAmount(request.getAmount());
-        transaction.setDate(request.getDate() != null ? request.getDate().atStartOfDay() : java.time.LocalDateTime.now());
+        transaction.setDate(request.getDate() != null
+                ? request.getDate().atStartOfDay()
+                : LocalDateTime.now());
         transaction.setDescription(request.getDescription());
         transaction.setCategory(category);
 

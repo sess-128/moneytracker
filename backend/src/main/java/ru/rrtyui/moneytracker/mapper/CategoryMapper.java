@@ -8,10 +8,6 @@ import ru.rrtyui.moneytracker.model.Category;
 @UtilityClass
 public class CategoryMapper {
 
-    public static CategoryResponse toCategoryResponse(Category category) {
-        return toCategoryResponse(category, false);
-    }
-
     public static CategoryResponse toCategoryResponse(Category category, boolean hasChildren) {
         if (category == null) {
             return null;

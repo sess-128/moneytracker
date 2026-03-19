@@ -13,7 +13,6 @@ import java.util.List;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    // ✅ ИСПОЛЬЗУЕМ FETCH JOIN, чтобы забрать родителей сразу и избежать N+1
     @Query("SELECT c FROM Category c LEFT JOIN FETCH c.parent WHERE c.parent IS NULL")
     List<Category> findByParentIsNull();
 
@@ -21,18 +20,14 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     boolean existsByParentId(Long parentId);
 
-    // ✅ Этот метод ок, он делает агрегацию в базе, N+1 тут нет.
-    // Но если потом в коде ты делаешь category.getParent(), то снова будет N+1.
-    // Поэтому лучше использовать методы, возвращающие Entity с FETCH JOIN, а DTO строить вручную.
-    // Оставляем как есть, если ты используешь только данные из DTO.
     @Query("SELECT new ru.rrtyui.moneytracker.dto.CategoryItemDto(" +
             "c.id, c.name, null, " +
             "CASE WHEN COUNT(c2) > 0 THEN true ELSE false END, " +
-            "cast(c.type as string)) "+ // Берем реальный тип
+            "cast(c.type as string)) " + // Берем реальный тип
             "FROM Category c " +
             "LEFT JOIN Category c2 ON c2.parent = c " +
             "WHERE c.parent IS NULL " +
-            "GROUP BY c.id, c.name, c.type") // Добавили c.type в группировку
+            "GROUP BY c.id, c.name, c.type")
     List<CategoryItemDto> findRootCategoryItems();
 
     @Query("SELECT new ru.rrtyui.moneytracker.dto.CategoryItemDto(" +
@@ -53,29 +48,27 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
                                     @Param("excludeId") Long excludeId);
 
     @Query(value = """
-        WITH RECURSIVE category_tree AS (
-            SELECT id, parent_id FROM categories WHERE id = :candidateChildId
-            UNION ALL
-            SELECT c.id, c.parent_id FROM categories c
-            INNER JOIN category_tree ct ON c.id = ct.parent_id
-        )
-        SELECT COUNT(*) FROM category_tree WHERE id = :potentialParentId
-        """, nativeQuery = true)
+            WITH RECURSIVE category_tree AS (
+                SELECT id, parent_id FROM categories WHERE id = :candidateChildId
+                UNION ALL
+                SELECT c.id, c.parent_id FROM categories c
+                INNER JOIN category_tree ct ON c.id = ct.parent_id
+            )
+            SELECT COUNT(*) FROM category_tree WHERE id = :potentialParentId
+            """, nativeQuery = true)
     long countCyclePath(@Param("potentialParentId") Long potentialParentId,
                         @Param("candidateChildId") Long candidateChildId);
 
     @Query("SELECT c FROM Category c WHERE NOT EXISTS (SELECT 1 FROM Category child WHERE child.parent = c)")
     List<Category> findAllLeafCategories();
 
-    // ✅ ГЛАВНОЕ ИСПРАВЛЕНИЕ ДЛЯ ПОИСКА:
-    // Добавляем LEFT JOIN FETCH c.parent, чтобы при итерации по списку не было N+1
     @Query("SELECT c FROM Category c LEFT JOIN FETCH c.parent ORDER BY c.type, c.name")
     List<Category> findAllSorted();
 
     @Query("SELECT new ru.rrtyui.moneytracker.dto.CategoryItemDto(" +
             "c.id, c.name, c.parent.id, " +
             "CASE WHEN COUNT(c2) > 0 THEN true ELSE false END, " +
-            "cast(c.type as string)) "+
+            "cast(c.type as string)) " +
             "FROM Category c " +
             "LEFT JOIN Category c2 ON c2.parent = c " +
             "GROUP BY c.id, c.name, c.parent.id, c.type")

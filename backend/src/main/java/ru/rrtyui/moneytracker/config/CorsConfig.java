@@ -14,11 +14,10 @@ import java.util.List;
 public class CorsConfig {
 
     @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE) // Критично: фильтр должен выполниться ПЕРВЫМ
+    @Order(Ordered.HIGHEST_PRECEDENCE)
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // Используем allowedOriginPatterns вместо allowedOrigins при allowCredentials
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:3000",
                 "http://localhost:5173"
@@ -27,7 +26,7 @@ public class CorsConfig {
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true);
-        config.setMaxAge(3600L); // Кэшируем preflight-запросы на 1 час
+        config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

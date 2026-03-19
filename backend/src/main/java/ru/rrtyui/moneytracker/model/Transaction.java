@@ -2,8 +2,6 @@ package ru.rrtyui.moneytracker.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -41,7 +39,7 @@ public class Transaction {
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false) // Важно: категория обязательна
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     private String description;
@@ -51,7 +49,6 @@ public class Transaction {
         this.createdAt = LocalDateTime.now();
     }
 
-    // Хелпер метод для получения типа транзакции на основе категории
     public String getType() {
         return (this.category != null && this.category.getType() != null)
                 ? this.category.getType().name()
