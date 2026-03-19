@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.rrtyui.moneytracker.model.TransactionType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,5 +17,4 @@ public class TransactionRequest {
     private LocalDate date;
     private String description;
     private Long categoryId;
-    private TransactionType type;
 }

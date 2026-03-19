@@ -17,11 +17,15 @@ public class CategoryMapper {
             return null;
         }
         Long parentId = (category.getParent() != null) ? category.getParent().getId() : null;
+
+        String type = category.getType() != null ? category.getType().name() : "EXPENSE";
+
         return new CategoryResponse(
                 category.getId(),
                 parentId,
                 category.getName(),
-                hasChildren
+                hasChildren,
+                type
         );
     }
 
@@ -30,11 +34,14 @@ public class CategoryMapper {
             return null;
         }
 
+        String type = dto.getType() != null ? dto.getType() : "EXPENSE";
+
         return new CategoryResponse(
                 dto.getId(),
                 dto.getParentId(),
                 dto.getName(),
-                dto.isHasChildren()
+                dto.isHasChildren(),
+                type
         );
     }
 }

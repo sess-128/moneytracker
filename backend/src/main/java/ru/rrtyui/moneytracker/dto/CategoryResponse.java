@@ -12,4 +12,5 @@ public class CategoryResponse {
     private Long parentId;
     private String name;
     private boolean hasChildren;
+    private String type;
 }
