@@ -7,15 +7,18 @@ spring:
   application:
     name: money-tracker
   datasource:
-    username: postgres
-    password: postgres
-    url: jdbc:postgresql://localhost:5432/moneytracker
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/moneytracker}
     driver-class-name: org.postgresql.Driver
+  liquibase:
+    change-log: db/changelog/db.changelog-master.xml
+    enabled: true
 
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
+    show-sql: ${SPRING_JPA_SHOW_SQL:true}
     properties:
       hibernate:
-        show_sql: true
+        show_sql: ${SPRING_JPA_SHOW_SQL:true}
