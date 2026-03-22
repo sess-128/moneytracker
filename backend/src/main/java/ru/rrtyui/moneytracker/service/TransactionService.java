@@ -2,9 +2,14 @@ package ru.rrtyui.moneytracker.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.rrtyui.moneytracker.dto.TransactionFilterRequest;
 import ru.rrtyui.moneytracker.dto.TransactionRequest;
 import ru.rrtyui.moneytracker.dto.TransactionResponse;
 import ru.rrtyui.moneytracker.exception.TransactionException;
@@ -71,6 +76,23 @@ public class TransactionService {
                 .collect(Collectors.toList());
     }
 
+    public Page<TransactionResponse> getFilteredTransactions(TransactionFilterRequest filter, int page, int size) {
+        log.info("Filtering transactions with params: {}", filter);
+
+        Specification<Transaction> spec = Specification
+                .where(TransactionSpecifications.dateBetween(filter.getStartDate(), filter.getEndDate()))
+                .and(TransactionSpecifications.hasParentCategories(filter.getParentCategoryIds()))
+                .and(TransactionSpecifications.hasCategories(filter.getCategoryIds()))
+                .and(TransactionSpecifications.amountBetween(filter.getMinAmount(), filter.getMaxAmount()))
+                .and(TransactionSpecifications.descriptionContains(filter.getDescription()))
+                .and(TransactionSpecifications.hasType(filter.getType()));
+
+        Pageable pageable = PageRequest.of(page, Math.min(size, 100), Sort.by("date").descending());
+
+        Page<Transaction> pageResult = transactionRepository.findAll(spec, pageable);
+
+        return pageResult.map(TransactionMapper::toTransactionResponse);
+    }
 
     @Transactional
     public void deleteTransaction(Long id) {

@@ -48,10 +48,8 @@ public class CategoryService {
 
     public List<CategoryResponse> getAllLeafCategories() {
         log.info("Получаем все дочерние категории");
-        List<Category> leafCategories = categoryRepository.findAllLeafCategories();
-
-        return leafCategories.stream()
-                .map(cat -> CategoryMapper.toCategoryResponse(cat, false))
+        return categoryRepository.findAllLeafCategoryItems().stream()
+                .map(CategoryMapper::toCategoryResponse)
                 .collect(Collectors.toList());
     }
 

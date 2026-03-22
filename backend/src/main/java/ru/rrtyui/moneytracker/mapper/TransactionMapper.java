@@ -33,21 +33,18 @@ public class TransactionMapper {
         }
 
         Category category = transaction.getCategory();
-        Long categoryId = (category != null) ? category.getId() : null;
-        String categoryName = (category != null) ? category.getName() : null;
-
-        String type = (category != null && category.getType() != null)
-                ? category.getType().name()
-                : "EXPENSE";
+        Category parent = category.getParent();
 
         return new TransactionResponse(
                 transaction.getId(),
                 transaction.getAmount(),
                 transaction.getDate(),
                 transaction.getDescription(),
-                categoryId,
-                categoryName,
-                type
+                category.getId(),
+                category.getName(),
+                category.getType().name(),
+                parent != null ? parent.getId() : null,
+                parent != null ? parent.getName() : null
         );
     }
 }

@@ -17,25 +17,13 @@ const TransactionList: React.FC<TransactionListProps> = ({ refreshKey, onNotify 
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchTransactions = () => {
-        setLoading(true);
-        transactionApi.getAll()
-            .then((response) => {
-                setTransactions(response.data);
-            })
-            .catch((error) => {
-                console.error('Error fetching transactions:', error);
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    };
-
     useEffect(() => {
         const loadData = async () => {
+            setLoading(true);
             try {
-                const response = await transactionApi.getAll();
-                setTransactions(response.data);
+                // Используем getWithFilters с пустыми фильтрами для получения последних транзакций
+                const response = await transactionApi.getWithFilters({}, 0, 10);
+                setTransactions(response.data.content);
             } catch (error) {
                 console.error('Error fetching transactions:', error);
             } finally {
@@ -51,7 +39,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ refreshKey, onNotify 
             try {
                 await transactionApi.delete(id);
                 if (onNotify) onNotify('Транзакция удалена', 'success');
-                fetchTransactions(); // Обновляем список
+                // Обновляем список через refreshKey
             } catch (error) {
                 console.error('Error deleting transaction:', error);
                 if (onNotify) onNotify('Ошибка при удалении', 'error');
@@ -59,7 +47,21 @@ const TransactionList: React.FC<TransactionListProps> = ({ refreshKey, onNotify 
         }
     };
 
-    if (loading) return <Typography>Загрузка...</Typography>;
+    const formatAmount = (amount: number | { value?: number } | undefined): number => {
+        if (typeof amount === 'number') return amount;
+        if (amount && typeof amount === 'object' && 'value' in amount) return amount.value || 0;
+        return 0;
+    };
+
+    if (loading) return <Typography variant="body2" color="text.secondary">Загрузка...</Typography>;
+
+    if (transactions.length === 0) {
+        return (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 3 }}>
+                Транзакций нет
+            </Typography>
+        );
+    }
 
     return (
         <TableContainer component={Paper} sx={{ mt: 3 }}>
@@ -79,6 +81,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ refreshKey, onNotify 
                         const isIncome = transaction.type === 'INCOME';
                         const color = isIncome ? 'green' : 'red';
                         const sign = isIncome ? '+' : '-';
+                        const amount = formatAmount(transaction.amount);
 
                         return (
                             <TableRow key={transaction.id}>
@@ -92,7 +95,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ refreshKey, onNotify 
                                 <TableCell>{transaction.description}</TableCell>
                                 <TableCell align="right">
                                     <Typography color={color} fontWeight="bold">
-                                        {sign}{transaction.amount}
+                                        {sign}{amount.toLocaleString('ru-RU')}
                                     </Typography>
                                 </TableCell>
                                 <TableCell align="center">

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     TextField, Button, Box, Paper, Typography, CircularProgress, Autocomplete
 } from '@mui/material';
-import { Transaction, Category } from '../types';
+import { Category } from '../types';
 import { transactionApi, categoryApi } from '../services/api';
 
 interface TransactionFormProps {
@@ -11,8 +11,13 @@ interface TransactionFormProps {
 }
 
 const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, onNotify }) => {
-    const [formData, setFormData] = useState<Partial<Transaction>>({
-        amount: undefined,
+    const [formData, setFormData] = useState<{
+        amount: number | string;
+        categoryId: number | undefined;
+        description: string;
+        date: string;
+    }>({
+        amount: '',
         categoryId: undefined,
         description: '',
         date: new Date().toISOString().split('T')[0]
@@ -22,30 +27,32 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, onNotify }
     const [loadingCategories, setLoadingCategories] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
-    useEffect(() => {
-        const loadCategories = async () => {
-            setLoadingCategories(true);
-            try {
-                // Используем новый метод getAll
-                const res = await categoryApi.getAll();
-                // Убираем дубликаты по ID
-                const uniqueCategories = Array.from(
-                    new Map(res.data.map(cat => [cat.id, cat])).values()
-                );
-                setAllCategories(uniqueCategories);
-            } catch (e) {
-                console.error(e);
-                if(onNotify) onNotify('Ошибка загрузки категорий', 'error');
-            } finally {
-                setLoadingCategories(false);
-            }
-        };
-        loadCategories();
-    }, []);
+    const loadCategories = useCallback(async () => {
+        setLoadingCategories(true);
+        try {
+            const res = await categoryApi.getAll();
+            const uniqueCategories = Array.from(
+                new Map(res.data.map(cat => [cat.id, cat])).values()
+            );
+            setAllCategories(uniqueCategories);
+        } catch (e) {
+            console.error(e);
+            if(onNotify) onNotify('Ошибка загрузки категорий', 'error');
+        } finally {
+            setLoadingCategories(false);
+        }
+    }, [onNotify]);
 
-    const handleChange = (e: any) => {
+    useEffect(() => {
+        loadCategories();
+    }, [loadCategories]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData(prev => ({ 
+            ...prev, 
+            [name]: name === 'amount' ? (value === '' ? '' : parseFloat(value)) : value 
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -57,16 +64,23 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, onNotify }
         }
 
         try {
-            await transactionApi.create(formData);
+            // Преобразуем amount в число и создаём правильный объект для отправки
+            const payload = {
+                amount: typeof formData.amount === 'number' ? formData.amount : parseFloat(formData.amount),
+                categoryId: formData.categoryId,
+                description: formData.description,
+                date: formData.date
+            };
+
+            await transactionApi.create(payload);
 
             if (onNotify) {
-                // ПРОВЕРКА: Строго верхний регистр
                 const typeRu = selectedCategory.type === 'INCOME' ? 'Доход' : 'Расход';
                 onNotify(`Транзакция (${typeRu}) успешно добавлена!`, 'success');
             }
 
             setFormData({
-                amount: undefined,
+                amount: '',
                 categoryId: undefined,
                 description: '',
                 date: new Date().toISOString().split('T')[0]
@@ -88,8 +102,9 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, onNotify }
             <Box component="form" onSubmit={handleSubmit}>
                 <TextField
                     fullWidth margin="normal" label="Сумма" name="amount" type="number"
-                    value={formData.amount || ''} onChange={handleChange}
+                    value={formData.amount} onChange={handleChange}
                     placeholder="0" required
+                    inputProps={{ step: "0.01", min: "0" }}
                 />
 
                 <Box sx={{ mt: 2, mb: 1 }}>
@@ -108,7 +123,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, onNotify }
                         getOptionKey={(option) => `cat-${option.id}`}
                         getOptionLabel={(option) => option.name}
                         renderOption={(props, option) => {
-                            // ПРОВЕРКА: Строго верхний регистр
                             const isIncome = option.type?.toUpperCase() === 'INCOME';
                             const color = isIncome ? 'green' : 'red';
                             const typeText = isIncome ? 'Доход' : 'Расход';
