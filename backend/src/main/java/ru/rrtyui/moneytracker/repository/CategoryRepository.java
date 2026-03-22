@@ -59,8 +59,13 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     long countCyclePath(@Param("potentialParentId") Long potentialParentId,
                         @Param("candidateChildId") Long candidateChildId);
 
-    @Query("SELECT c FROM Category c WHERE NOT EXISTS (SELECT 1 FROM Category child WHERE child.parent = c)")
-    List<Category> findAllLeafCategories();
+    @Query("SELECT new ru.rrtyui.moneytracker.dto.CategoryItemDto(" +
+            "c.id, c.name, c.parent.id, " +
+            "false, " +  // у листьев нет детей
+            "cast(c.type as string)) " +
+            "FROM Category c " +
+            "WHERE NOT EXISTS (SELECT 1 FROM Category child WHERE child.parent = c)")
+    List<CategoryItemDto> findAllLeafCategoryItems();
 
     @Query("SELECT c FROM Category c LEFT JOIN FETCH c.parent ORDER BY c.type, c.name")
     List<Category> findAllSorted();

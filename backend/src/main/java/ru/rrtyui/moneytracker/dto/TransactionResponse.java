@@ -19,4 +19,6 @@ public class TransactionResponse {
     private Long categoryId;
     private String categoryName;
     private String type;
+    private Long parentCategoryId;
+    private String parentCategoryName;
 }

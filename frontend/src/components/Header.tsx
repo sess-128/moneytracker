@@ -20,6 +20,9 @@ const Header: React.FC = () => {
                     <Button color="inherit" component={Link} to="/transactions">
                         Транзакции
                     </Button>
+                    <Button color="inherit" component={Link} to="/analytics">
+                        Аналитика
+                    </Button>
                     <Button color="inherit" component={Link} to="/categories">
                         Категории
                     </Button>
