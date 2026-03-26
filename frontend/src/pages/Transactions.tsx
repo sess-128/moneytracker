@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Container, Paper, Typography, Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow, IconButton, TablePagination } from '@mui/material';
+import { 
+    Container, Paper, Typography, Table, TableBody, TableCell,
+    TableContainer, TableHead, TableRow, IconButton, TablePagination,
+    Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import FiltersBar from '../components/FiltersBar';
@@ -14,6 +17,14 @@ const Transactions: React.FC = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(40);
     const [totalElements, setTotalElements] = useState(0);
+
+    // Состояние для диалога редактирования
+    const [openDialog, setOpenDialog] = useState(false);
+    const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+    const [editFormData, setEditFormData] = useState({
+        amount: '',
+        date: ''
+    });
 
     // Функция для получения числового значения из amount
     const getAmountValue = (amount: number | { value?: number } | undefined): number => {
@@ -56,6 +67,44 @@ const Transactions: React.FC = () => {
         }
     };
 
+    // Открытие диалога редактирования
+    const handleOpenEditDialog = (transaction: Transaction) => {
+        setEditingTransaction(transaction);
+        setEditFormData({
+            amount: getAmountValue(transaction.amount).toString(),
+            date: transaction.date
+        });
+        setOpenDialog(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+        setEditingTransaction(null);
+    };
+
+    // Сохранение изменений
+    const handleSaveEdit = async () => {
+        if (!editingTransaction || !editFormData.amount || !editFormData.date) {
+            return;
+        }
+
+        try {
+            const payload = {
+                amount: parseFloat(editFormData.amount),
+                date: editFormData.date,
+                categoryId: editingTransaction.categoryId,
+                description: editingTransaction.description,
+                type: editingTransaction.type
+            };
+
+            await transactionApi.update(editingTransaction.id!, payload);
+            handleCloseDialog();
+            loadTransactions();
+        } catch (error) {
+            console.error('Error updating transaction:', error);
+        }
+    };
+
     const formatAmount = (amount: number | { value?: number } | undefined): number => {
         return getAmountValue(amount);
     };
@@ -73,7 +122,7 @@ const Transactions: React.FC = () => {
                     Управление транзакциями: фильтрация, просмотр, редактирование и удаление записей.
                     Для анализа расходов используйте страницу <strong>«Аналитика»</strong>.
                 </Typography>
-                
+
                 {/* Горизонтальная строка фильтров */}
                 <FiltersBar
                     filters={filters}
@@ -118,7 +167,13 @@ const Transactions: React.FC = () => {
                                             </Typography>
                                         </TableCell>
                                         <TableCell align="center">
-                                            <IconButton color="primary" size="small"><EditIcon /></IconButton>
+                                            <IconButton 
+                                                color="primary" 
+                                                size="small"
+                                                onClick={() => transaction.id && handleOpenEditDialog(transaction)}
+                                            >
+                                                <EditIcon />
+                                            </IconButton>
                                             <IconButton
                                                 color="error"
                                                 size="small"
@@ -149,6 +204,39 @@ const Transactions: React.FC = () => {
                     labelDisplayedRows={({ from, to, count }) => `${from}-${to} из ${count}`}
                 />
             </Paper>
+
+            {/* Диалог редактирования транзакции */}
+            <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+                <DialogTitle>Редактировать транзакцию</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Сумма"
+                        type="number"
+                        fullWidth
+                        value={editFormData.amount}
+                        onChange={(e) => setEditFormData({ ...editFormData, amount: e.target.value })}
+                        required
+                    />
+                    <TextField
+                        margin="dense"
+                        label="Дата"
+                        type="date"
+                        fullWidth
+                        value={editFormData.date}
+                        onChange={(e) => setEditFormData({ ...editFormData, date: e.target.value })}
+                        InputLabelProps={{ shrink: true }}
+                        required
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog}>Отмена</Button>
+                    <Button onClick={handleSaveEdit} variant="contained">
+                        Сохранить
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 };

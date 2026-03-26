@@ -27,8 +27,9 @@ public class AnalyticsService {
      * Получение статистики расходов за период
      */
     public SpendingStatsDto getSpendingStats(LocalDate startDate, LocalDate endDate) {
-        LocalDateTime start = startDate != null ? startDate.atStartOfDay() : null;
-        LocalDateTime end = endDate != null ? endDate.atTime(23, 59, 59) : null;
+        // Используем очень старые/далёкие даты вместо null для корректной работы SQL
+        LocalDateTime start = startDate != null ? startDate.atStartOfDay() : LocalDateTime.of(1970, 1, 1, 0, 0);
+        LocalDateTime end = endDate != null ? endDate.atTime(23, 59, 59) : LocalDateTime.of(2099, 12, 31, 23, 59, 59);
 
         List<TransactionForStats> transactions = transactionRepository.findAllForStats(start, end);
 
@@ -43,9 +44,7 @@ public class AnalyticsService {
             }
         }
 
-        long days = (end != null && start != null) 
-            ? ChronoUnit.DAYS.between(start, end) + 1 
-            : 1;
+        long days = ChronoUnit.DAYS.between(start, end) + 1;
         BigDecimal averageDailyExpense = days > 0 
             ? totalExpense.divide(BigDecimal.valueOf(days), 2, java.math.RoundingMode.HALF_UP) 
             : BigDecimal.ZERO;
@@ -100,8 +99,9 @@ public class AnalyticsService {
      * Получение накопительных расходов по дням
      */
     public List<DailySpendingDto> getCumulativeSpending(LocalDate startDate, LocalDate endDate) {
-        LocalDateTime start = startDate != null ? startDate.atStartOfDay() : null;
-        LocalDateTime end = endDate != null ? endDate.atTime(23, 59, 59) : null;
+        // Используем дефолтные даты вместо null
+        LocalDateTime start = startDate != null ? startDate.atStartOfDay() : LocalDateTime.of(1970, 1, 1, 0, 0);
+        LocalDateTime end = endDate != null ? endDate.atTime(23, 59, 59) : LocalDateTime.of(2099, 12, 31, 23, 59, 59);
 
         List<TransactionForStats> transactions = transactionRepository.findAllForStats(start, end);
 
@@ -119,8 +119,14 @@ public class AnalyticsService {
 
         // Создаём полный диапазон дат
         List<LocalDate> allDates = new ArrayList<>();
-        LocalDate current = startDate != null ? startDate : LocalDate.now().minusMonths(1);
-        LocalDate endLocal = endDate != null ? endDate : LocalDate.now();
+        LocalDate current = startDate != null ? startDate : LocalDate.of(1970, 1, 1);
+        LocalDate endLocal = endDate != null ? endDate : LocalDate.of(2099, 12, 31);
+        
+        // Ограничиваем диапазон 365 днями для производительности
+        long daysBetween = ChronoUnit.DAYS.between(current, endLocal);
+        if (daysBetween > 365) {
+            endLocal = current.plusDays(365);
+        }
         
         while (!current.isAfter(endLocal)) {
             allDates.add(current);
@@ -144,8 +150,9 @@ public class AnalyticsService {
      * Расходы по категориям за период
      */
     public java.util.Map<String, BigDecimal> getSpendingByCategory(LocalDate startDate, LocalDate endDate) {
-        LocalDateTime start = startDate != null ? startDate.atStartOfDay() : null;
-        LocalDateTime end = endDate != null ? endDate.atTime(23, 59, 59) : null;
+        // Используем дефолтные даты вместо null
+        LocalDateTime start = startDate != null ? startDate.atStartOfDay() : LocalDateTime.of(1970, 1, 1, 0, 0);
+        LocalDateTime end = endDate != null ? endDate.atTime(23, 59, 59) : LocalDateTime.of(2099, 12, 31, 23, 59, 59);
 
         List<TransactionForStats> transactions = transactionRepository.findAllForStats(start, end);
 

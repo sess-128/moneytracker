@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-    Container, Typography, Grid, Paper, Box, 
+import {
+    Container, Typography, Grid, Paper, Box,
     FormControl, InputLabel, Select, MenuItem, TextField, Button, Stack
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { SpendingStats } from '../types';
 import { analyticsApi } from '../services/api';
-import SpendingTrendChart from '../components/SpendingTrendChart';
+import ExpensesVsBalanceChart from '../components/ExpensesVsBalanceChart';
 import DailyBarChart from '../components/DailyBarChart';
 
 const Analytics: React.FC = () => {
@@ -193,13 +193,13 @@ const Analytics: React.FC = () => {
                 </Grid>
             </Grid>
 
-            {/* Основной график */}
+            {/* Основной график - Расходы и баланс */}
             <Paper sx={{ p: 2, mb: 3 }}>
                 <Box sx={{ height: 400 }}>
-                    <SpendingTrendChart 
-                        startDate={dates.start} 
+                    <ExpensesVsBalanceChart
+                        startDate={dates.start}
                         endDate={dates.end}
-                        title="Накопительная динамика расходов"
+                        title="Расходы и текущий баланс"
                     />
                 </Box>
             </Paper>
