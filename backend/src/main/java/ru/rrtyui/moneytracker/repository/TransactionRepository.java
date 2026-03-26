@@ -26,11 +26,13 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
     List<Transaction> findAll(Specification<Transaction> spec);
 
     @Query("SELECT t.id as id, t.amount as amount, t.date as date, c.type as type, c.name as categoryName " +
-           "FROM Transaction t JOIN t.category c " +
-           "WHERE (:startDate IS NULL OR t.date >= :startDate) " +
-           "AND (:endDate IS NULL OR t.date <= :endDate)")
+            "FROM Transaction t JOIN t.category c " +
+            "WHERE t.date >= :startDate AND t.date <= :endDate")
     List<AnalyticsService.TransactionForStats> findAllForStats(
-        @Param("startDate") LocalDateTime startDate,
-        @Param("endDate") LocalDateTime endDate
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
     );
+
+    @Query("SELECT COUNT(t) FROM Transaction t WHERE t.date >= :startDate AND t.date <= :endDate")
+    long countByDateRange(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

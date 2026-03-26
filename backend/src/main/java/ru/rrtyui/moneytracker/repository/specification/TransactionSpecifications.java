@@ -29,16 +29,11 @@ public class TransactionSpecifications {
     }
 
     public static Specification<Transaction> dateBetween(LocalDate start, LocalDate end) {
-        return (root, query, cb) -> {
-            if (start == null && end == null) return cb.conjunction();
-            if (start != null && end != null) {
-                return cb.between(root.get("date"), start.atStartOfDay(), end.atTime(23, 59, 59));
-            }
-            if (start != null) {
-                return cb.greaterThanOrEqualTo(root.get("date"), start.atStartOfDay());
-            }
-            return cb.lessThanOrEqualTo(root.get("date"), end.atTime(23, 59, 59));
-        };
+        // Используем дефолтные даты вместо null для корректной работы SQL
+        LocalDateTime startDate = start != null ? start.atStartOfDay() : LocalDateTime.of(1970, 1, 1, 0, 0);
+        LocalDateTime endDate = end != null ? end.atTime(23, 59, 59) : LocalDateTime.of(2099, 12, 31, 23, 59, 59);
+        
+        return (root, query, cb) -> cb.between(root.get("date"), startDate, endDate);
     }
 
     public static Specification<Transaction> hasParentCategories(List<Long> parentIds) {
