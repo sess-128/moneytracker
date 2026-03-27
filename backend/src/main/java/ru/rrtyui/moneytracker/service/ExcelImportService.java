@@ -12,7 +12,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.rrtyui.moneytracker.dto.ImportRequest;
-import ru.rrtyui.moneytracker.dto.TransactionImportDto;
+import ru.rrtyui.moneytracker.dto.transaction.TransactionImportDto;
 import ru.rrtyui.moneytracker.model.Category;
 import ru.rrtyui.moneytracker.model.Transaction;
 import ru.rrtyui.moneytracker.repository.CategoryRepository;

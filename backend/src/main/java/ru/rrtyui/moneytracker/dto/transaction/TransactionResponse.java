@@ -1,4 +1,4 @@
-package ru.rrtyui.moneytracker.dto;
+package ru.rrtyui.moneytracker.dto.transaction;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

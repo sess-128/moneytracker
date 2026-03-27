@@ -9,9 +9,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.rrtyui.moneytracker.dto.TransactionFilterRequest;
-import ru.rrtyui.moneytracker.dto.TransactionRequest;
-import ru.rrtyui.moneytracker.dto.TransactionResponse;
+import ru.rrtyui.moneytracker.dto.transaction.TransactionFilterRequest;
+import ru.rrtyui.moneytracker.dto.transaction.TransactionRequest;
+import ru.rrtyui.moneytracker.dto.transaction.TransactionResponse;
 import ru.rrtyui.moneytracker.exception.TransactionException;
 import ru.rrtyui.moneytracker.mapper.TransactionMapper;
 import ru.rrtyui.moneytracker.model.Category;
@@ -34,6 +34,7 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final CategoryRepository categoryRepository;
 
+    //TODO: почему бы не переписать так, чтобы джоинилась просто таблица категорий и по ней выполнялся запрос?
     public TransactionResponse createTransaction(TransactionRequest request) {
 
         Long categoryId = request.getCategoryId();
@@ -45,7 +46,6 @@ public class TransactionService {
                 });
 
         Transaction transaction = TransactionMapper.toTransaction(request, category);
-        transaction.setCategory(category);
 
         log.info("Saving transaction with ID {}", transaction.getId());
         Transaction saved = transactionRepository.save(transaction);
@@ -54,6 +54,7 @@ public class TransactionService {
         return TransactionMapper.toTransactionResponse(saved);
     }
 
+    //TODO: зачем этот метод, если есть getFilteredTransactions()?
     public List<TransactionResponse> getAllTransactions(LocalDateTime from, LocalDateTime to, Long categoryId) {
 
         List<Specification<Transaction>> specs = new ArrayList<>();

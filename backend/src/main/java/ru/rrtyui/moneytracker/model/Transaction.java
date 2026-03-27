@@ -10,8 +10,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,9 +49,10 @@ public class Transaction {
         this.createdAt = LocalDateTime.now();
     }
 
+    /*TODO: возможно стоит пересмотреть структуру модели, чтобы логика определения типа транзкакции либо не учавствовала вовсе
+    либо не зависила от категории, а устанавливалась в маппере например
+     */
     public String getType() {
-        return (this.category != null && this.category.getType() != null)
-                ? this.category.getType().name()
-                : "EXPENSE";
+        return this.category.getType().name();
     }
 }

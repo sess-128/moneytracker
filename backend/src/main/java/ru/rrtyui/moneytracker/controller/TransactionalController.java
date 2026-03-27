@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.rrtyui.moneytracker.dto.TransactionFilterRequest;
-import ru.rrtyui.moneytracker.dto.TransactionRequest;
-import ru.rrtyui.moneytracker.dto.TransactionResponse;
+import ru.rrtyui.moneytracker.dto.transaction.TransactionFilterRequest;
+import ru.rrtyui.moneytracker.dto.transaction.TransactionRequest;
+import ru.rrtyui.moneytracker.dto.transaction.TransactionResponse;
 import ru.rrtyui.moneytracker.model.CategoryType;
 import ru.rrtyui.moneytracker.service.TransactionService;
 
@@ -32,8 +32,12 @@ public class TransactionalController {
 
     private final TransactionService transactionService;
 
+    //TODO: зачем два метода получения транзакций с фильтрами? один только по датах а второй полноценный
+
     @GetMapping
-    public ResponseEntity<List<TransactionResponse>> getAll(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from, @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to, @RequestParam(required = false) Long categoryId) {
+    public ResponseEntity<List<TransactionResponse>> getAll(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+                                                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+                                                            @RequestParam(required = false) Long categoryId) {
         List<TransactionResponse> result = transactionService.getAllTransactions(from, to, categoryId);
         return ResponseEntity.ok(result);
     }

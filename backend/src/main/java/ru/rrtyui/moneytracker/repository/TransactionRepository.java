@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import ru.rrtyui.moneytracker.dto.transaction.TransactionRequest;
 import ru.rrtyui.moneytracker.model.Transaction;
 import ru.rrtyui.moneytracker.service.AnalyticsService;
 
@@ -15,6 +16,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long>, JpaSpecificationExecutor<Transaction> {
+
+    @Query("""
+            INSERT INTO Transaction (amount, date, category, description) VALUES  
+            """)
+    Transaction saveTransaction(TransactionRequest transactionRequest);
+
     long countByCategoryId(Long categoryId);
 
     @Override

@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.rrtyui.moneytracker.dto.CategoryResponse;
-import ru.rrtyui.moneytracker.dto.CreateCategoryRequest;
-import ru.rrtyui.moneytracker.dto.UpdateCategoryRequest;
+import ru.rrtyui.moneytracker.dto.category.CategoryResponse;
+import ru.rrtyui.moneytracker.dto.category.CreateCategoryRequest;
+import ru.rrtyui.moneytracker.dto.category.UpdateCategoryRequest;
 import ru.rrtyui.moneytracker.service.CategoryService;
 
 import java.util.List;
@@ -44,7 +44,8 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryResponse> update(@PathVariable Long id, @RequestBody UpdateCategoryRequest request) {
+    public ResponseEntity<CategoryResponse> update(@PathVariable Long id,
+                                                   @RequestBody UpdateCategoryRequest request) {
         CategoryResponse updated = categoryService.updateCategory(id, request);
         return ResponseEntity.ok(updated);
     }

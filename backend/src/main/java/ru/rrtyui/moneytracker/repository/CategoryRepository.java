@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.rrtyui.moneytracker.dto.CategoryItemDto;
+import ru.rrtyui.moneytracker.dto.category.CategoryItemDto;
 import ru.rrtyui.moneytracker.model.Category;
 import ru.rrtyui.moneytracker.model.CategoryType;
 
@@ -15,6 +15,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query("SELECT c FROM Category c LEFT JOIN FETCH c.parent WHERE c.parent IS NULL")
     List<Category> findByParentIsNull();
+    void find
 
     List<Category> findByType(CategoryType type);
 
