@@ -1,8 +1,8 @@
 package ru.rrtyui.moneytracker.mapper;
 
 import lombok.experimental.UtilityClass;
-import ru.rrtyui.moneytracker.dto.TransactionRequest;
-import ru.rrtyui.moneytracker.dto.TransactionResponse;
+import ru.rrtyui.moneytracker.dto.transaction.TransactionRequest;
+import ru.rrtyui.moneytracker.dto.transaction.TransactionResponse;
 import ru.rrtyui.moneytracker.model.Category;
 import ru.rrtyui.moneytracker.model.Transaction;
 
