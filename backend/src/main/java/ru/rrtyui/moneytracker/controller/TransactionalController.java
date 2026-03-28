@@ -1,7 +1,6 @@
 package ru.rrtyui.moneytracker.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -21,26 +20,14 @@ import ru.rrtyui.moneytracker.service.TransactionService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("transactions")
 @RequiredArgsConstructor
-@Slf4j
 public class TransactionalController {
 
     private final TransactionService transactionService;
-
-    //TODO: зачем два метода получения транзакций с фильтрами? один только по датах а второй полноценный
-
-    @GetMapping
-    public ResponseEntity<List<TransactionResponse>> getAll(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-                                                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
-                                                            @RequestParam(required = false) Long categoryId) {
-        List<TransactionResponse> result = transactionService.getAllTransactions(from, to, categoryId);
-        return ResponseEntity.ok(result);
-    }
 
     @PostMapping
     public ResponseEntity<TransactionResponse> create(@RequestBody TransactionRequest request) {
@@ -65,9 +52,6 @@ public class TransactionalController {
                                                                  @RequestParam(required = false) CategoryType type,
                                                                  @RequestParam(defaultValue = "0") int page,
                                                                  @RequestParam(defaultValue = "40") int size) {
-        log.info("Received categoryIds: {}", categoryIds);  // ← добавить
-        log.info("Received parentCategoryIds: {}", parentCategoryIds);
-
         TransactionFilterRequest filter = new TransactionFilterRequest();
         filter.setStartDate(startDate);
         filter.setEndDate(endDate);

@@ -9,8 +9,6 @@ const api = axios.create({
 });
 
 export const transactionApi = {
-    getAll: () => api.get<Transaction[]>('/transactions'),
-
     getWithFilters: (filters: TransactionFilters, page: number = 0, size: number = 40) => {
         const params = new URLSearchParams();
         params.append('page', page.toString());

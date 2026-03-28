@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyTracker Backend — Полная спецификация</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #16a34a;
+            --warning-color: #ca8a04;
+            --danger-color: #dc2626;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --code-bg: #1e293b;
+            --code-text: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.7;
+            color: var(--text-color);
+            background: var(--bg-color);
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #7c3aed);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px 25px;
+        }
+
+        nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+
+        /* Sections */
+        section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--text-color);
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 30px;
+            color: var(--primary-color);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            margin-top: 20px;
+        }
+
+        p {
+            margin-bottom: 16px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary-color), #7c3aed);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--bg-color);
+        }
+
+        tr:hover {
+            background: #f1f5f9;
+        }
+
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+
+        p code, li code {
+            background: var(--bg-color);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: var(--primary-color);
+            font-size: 0.9em;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 16px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Checkboxes */
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        /* Diagrams */
+        .diagram {
+            background: var(--bg-color);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            white-space: pre;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        /* Mermaid diagrams container */
+        .mermaid {
+            background: var(--card-bg);
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Info boxes */
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary-color);
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box {
+            background: #fefce8;
+            border-left: 4px solid var(--warning-color);
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .success-box {
+            background: #f0fdf4;
+            border-left: 4px solid var(--success-color);
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* API endpoint badges */
+        .endpoint {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .method {
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            font-family: 'Consolas', monospace;
+        }
+
+        .method-get { background: #16a34a; color: white; }
+        .method-post { background: #2563eb; color: white; }
+        .method-put { background: #ca8a04; color: white; }
+        .method-delete { background: #dc2626; color: white; }
+
+        .path {
+            font-family: 'Consolas', monospace;
+            font-size: 0.95rem;
+            color: var(--text-color);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            border-top: 2px solid var(--border-color);
+            margin-top: 40px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            section {
+                padding: 20px;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: var(--bg-color);
+            border-radius: 8px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            color: var(--text-color);
+        }
+
+        .toc ol {
+            columns: 2;
+            column-gap: 40px;
+        }
+
+        .toc li {
+            break-inside: avoid;
+        }
+
+        .toc a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .toc ol {
+                columns: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>MoneyTracker Backend</h1>
+        <p>Полная спецификация для переписывания бекенда</p>
+    </header>
+
+    <div class="container">
+        <nav>
+            <ul>
+                <li><a href="#intro">Введение</a></li>
+                <li><a href="#requirements">Требования</a></li>
+                <li><a href="#architecture">Архитектура</a></li>
+                <li><a href="#stack">Стек</a></li>
+                <li><a href="#database">Модель данных</a></li>
+                <li><a href="#api">REST API</a></li>
+                <li><a href="#validation">Валидация</a></li>
+                <li><a href="#infrastructure">Инфраструктура</a></li>
+                <li><a href="#plan">План</a></li>
+                <li><a href="#checklist">Чеклист</a></li>
+            </ul>
+        </nav>
+
+        <div class="toc">
+            <h3>📋 Содержание</h3>
+            <ol>
+                <li><a href="#intro">Введение</a></li>
+                <li><a href="#requirements">Функциональные требования</a></li>
+                <li><a href="#architecture">Архитектура системы</a></li>
+                <li><a href="#stack">Технический стек</a></li>
+                <li><a href="#database">Модель данных</a></li>
+                <li><a href="#api-auth">Аутентификация и пользователи</a></li>
+                <li><a href="#api-categories">Категории</a></li>
+                <li><a href="#api-transactions">Транзакции</a></li>
+                <li><a href="#api-analytics">Аналитика</a></li>
+                <li><a href="#api-goals">Финансовые цели</a></li>
+                <li><a href="#api-import">Импорт/экспорт</a></li>
+                <li><a href="#validation">Валидация и ошибки</a></li>
+                <li><a href="#infrastructure">Инфраструктура</a></li>
+                <li><a href="#plan">План разработки</a></li>
+                <li><a href="#checklist">Чеклист самопроверки</a></li>
+            </ol>
+        </div>
+
+        <section id="intro">
+            <h2>Введение</h2>
+            
+            <h3>Мотивация проекта</h3>
+            <p>MoneyTracker — это персональная система учёта финансов для контроля доходов, расходов и достижения финансовых целей. Проект решает задачи:</p>
+            <ul>
+                <li><strong>Учёт транзакций</strong> — фиксация всех финансовых операций</li>
+                <li><strong>Категоризация</strong> — группировка по статьям расходов/доходов</li>
+                <li><strong>Аналитика</strong> — визуализация и сравнение финансовых показателей</li>
+                <li><strong>Планирование</strong> — постановка и отслеживание финансовых целей</li>
+                <li><strong>Импорт данных</strong> — загрузка истории из Excel</li>
+            </ul>
+
+            <h3>Целевая аудитория</h3>
+            <ul>
+                <li>Частные пользователи для личного бюджетирования</li>
+                <li>Малый бизнес для простого учёта операций</li>
+            </ul>
+
+            <div class="info-box">
+                <h4>Что нужно знать разработчику</h4>
+                <table>
+                    <tr>
+                        <th>Технология</th>
+                        <th>Уровень</th>
+                        <th>Зачем</th>
+                    </tr>
+                    <tr>
+                        <td>Java 17+</td>
+                        <td>Middle</td>
+                        <td>Основной язык</td>
+                    </tr>
+                    <tr>
+                        <td>Spring Boot 3.x</td>
+                        <td>Middle</td>
+                        <td>Фреймворк приложения</td>
+                    </tr>
+                    <tr>
+                        <td>Spring Data JPA</td>
+                        <td>Middle</td>
+                        <td>Работа с БД</td>
+                    </tr>
+                    <tr>
+                        <td>Spring Security</td>
+                        <td>Middle</td>
+                        <td>JWT аутентификация</td>
+                    </tr>
+                    <tr>
+                        <td>PostgreSQL</td>
+                        <td>Basic</td>
+                        <td>Хранение данных</td>
+                    </tr>
+                    <tr>
+                        <td>Liquibase</td>
+                        <td>Basic</td>
+                        <td>Миграции схемы БД</td>
+                    </tr>
+                    <tr>
+                        <td>Docker</td>
+                        <td>Basic</td>
+                        <td>Контейнеризация</td>
+                    </tr>
+                    <tr>
+                        <td>JUnit 5, Testcontainers</td>
+                        <td>Basic</td>
+                        <td>Тестирование</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <section id="requirements">
+            <h2>Функциональные требования</h2>
+
+            <h3>1. Управление пользователями</h3>
+            <table>
+                <tr><th>Функция</th><th>Описание</th></tr>
+                <tr><td>Регистрация</td><td>Создание аккаунта с email и паролем</td></tr>
+                <tr><td>Аутентификация</td><td>Получение JWT токена по логину/паролю</td></tr>
+                <tr><td>Выход</td><td>Отзыв токена (опционально через blacklist)</td></tr>
+                <tr><td>Профиль</td><td>Получение/обновление данных пользователя</td></tr>
+            </table>
+
+            <h3>2. Управление категориями</h3>
+            <table>
+                <tr><th>Функция</th><th>Описание</th></tr>
+                <tr><td>Создание категории</td><td>Добавление категории с именем, типом, родительской категорией</td></tr>
+                <tr><td>Редактирование</td><td>Изменение имени, типа категории</td></tr>
+                <tr><td>Удаление</td><td>Удаление категории (если не используется в транзакциях)</td></tr>
+                <tr><td>Иерархия</td><td>Поддержка вложенных категорий (родитель → потомки)</td></tr>
+                <tr><td>Типы категорий</td><td>EXPENSE (расход), INCOME (доход)</td></tr>
+                <tr><td>Список категорий</td><td>Получение всех категорий с фильтрацией по типу</td></tr>
+            </table>
+
+            <h3>3. Управление транзакциями</h3>
+            <table>
+                <tr><th>Функция</th><th>Описание</th></tr>
+                <tr><td>Создание транзакции</td><td>Добавление записи о доходе/расходе</td></tr>
+                <tr><td>Редактирование</td><td>Изменение суммы, даты, категории, описания</td></tr>
+                <tr><td>Удаление</td><td>Удаление транзакции</td></tr>
+                <tr><td>Фильтрация</td><td>Поиск по периоду, категории, типу, сумме</td></tr>
+                <tr><td>Пагинация</td><td>Постраничный вывод транзакций</td></tr>
+            </table>
+
+            <h3>4. Аналитика</h3>
+            <table>
+                <tr><th>Функция</th><th>Описание</th></tr>
+                <tr><td>Статистика за период</td><td>Общая сумма доходов, расходов, баланс, кол-во транзакций</td></tr>
+                <tr><td>Сравнение периодов</td><td>Сравнение текущего и предыдущего периода (процент изменения)</td></tr>
+                <tr><td>Накопительный график</td><td>Динамика расходов по дням (накопительным итогом)</td></tr>
+                <tr><td>Расходы по категориям</td><td>Группировка расходов по категориям (для диаграммы pie chart)</td></tr>
+                <tr><td>Динамика по месяцам</td><td>Сравнение месяцев по доходам/расходам</td></tr>
+            </table>
+
+            <h3>5. Финансовые цели</h3>
+            <table>
+                <tr><th>Функция</th><th>Описание</th></tr>
+                <tr><td>Создание цели</td><td>Название, целевая сумма, дедлайн, текущая сумма</td></tr>
+                <tr><td>Редактирование цели</td><td>Изменение параметров цели</td></tr>
+                <tr><td>Удаление цели</td><td>Удаление цели</td></tr>
+                <tr><td>Пополнение цели</td><td>Внесение суммы в цель</td></tr>
+                <tr><td>Список целей</td><td>Получение всех целей с прогрессом выполнения</td></tr>
+                <tr><td>Прогресс</td><td>Автоматический расчёт % достижения цели</td></tr>
+            </table>
+
+            <h3>6. Импорт/экспорт</h3>
+            <table>
+                <tr><th>Функция</th><th>Описание</th></tr>
+                <tr><td>Импорт из Excel</td><td>Загрузка файла .xlsx с транзакциями (дата, сумма, категория, описание)</td></tr>
+                <tr><td>Экспорт в Excel</td><td>Выгрузка всех транзакций за период в .xlsx</td></tr>
+                <tr><td>Шаблон импорта</td><td>Скачивание шаблона Excel для заполнения</td></tr>
+            </table>
+        </section>
+
+        <section id="architecture">
+            <h2>Архитектура системы</h2>
+
+            <h3>Общая архитектура</h3>
+            <div class="diagram">
+┌─────────────────────────────────────────────────────────────────┐
+│                         Client (Frontend)                        │
+│                      React / Mobile App                          │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼ HTTP/HTTPS (JSON, JWT)
+┌─────────────────────────────────────────────────────────────────┐
+│                      API Gateway / Nginx                         │
+│                    (SSL termination, proxy)                      │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Spring Boot Application                       │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
+│  │  Controller │  │   Service   │  │      Repository         │  │
+│  │   Layer     │→ │    Layer    │→ │       (JPA)           │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────────┘  │
+│  ┌─────────────────────────────────────────────────────────────┐│
+│  │    Security (JWT Filter, UserDetailsService, AuthManager)   ││
+│  └─────────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────────┘
+                              │
+              ┌───────────────┼───────────────┐
+              ▼               ▼               ▼
+       ┌────────────┐ ┌────────────┐ ┌────────────┐
+       │ PostgreSQL │ │    Redis   │ │   MinIO    │
+       │   (Data)   │ │  (Sessions │ │   (Files)  │
+       │            │ │   Cache)   │ │            │
+       └────────────┘ └────────────┘ └────────────┘
+            </div>
+
+            <h3>Слои приложения</h3>
+            <div class="diagram">
+┌─────────────────────────────────────────────────────────────┐
+│                    Controller Layer                          │
+│  - REST endpoints                                            │
+│  - Request validation (@Valid)                               │
+│  - DTO mapping (Request → Service DTO)                       │
+│  - HTTP status codes                                         │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                     Service Layer                            │
+│  - Business logic                                            │
+│  - Transaction management (@Transactional)                   │
+│  - DTO mapping (Entity → Response DTO)                       │
+│  - Integration with external services                        │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   Repository Layer                           │
+│  - Data access (Spring Data JPA)                             │
+│  - Custom queries (@Query, Specifications)                   │
+│  - Entity projections                                        │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      Entity Layer                            │
+│  - JPA entities (@Entity)                                    │
+│  - Relationships (@OneToMany, @ManyToOne)                    │
+│  - Auditing (@CreatedDate, @LastModifiedDate)                │
+└─────────────────────────────────────────────────────────────┘
+            </div>
+
+            <h3>JWT Authentication Flow</h3>
+            <div class="diagram">
+1. Регистрация / Вход
+   Client ──POST /api/auth/register──→ Server
+   Client ←──{ jwtToken, refreshToken }── Server
+
+2. Доступ к защищённым ресурсам
+   Client ──GET /api/transactions──→ Server
+              Header: Authorization: Bearer &lt;jwtToken&gt;
+   
+3. Server (JWT Filter)
+   ┌─────────────────────────────────────┐
+   │ 1. Извлечь токен из заголовка       │
+   │ 2. Проверить подпись (secret key)   │
+   │ 3. Проверить срок действия          │
+   │ 4. Извлечь userId из claims         │
+   │ 5. Установить Authentication        │
+   └─────────────────────────────────────┘
+
+4. Refresh токена (если access expired)
+   Client ──POST /api/auth/refresh──→ Server
+              Body: { refreshToken }
+   Client ←──{ newAccessToken }── Server
+            </div>
+        </section>
+
+        <section id="stack">
+            <h2>Технический стек</h2>
+
+            <h3>Основные технологии</h3>
+            <table>
+                <tr><th>Компонент</th><th>Технология</th><th>Версия</th><th>Обоснование</th></tr>
+                <tr><td>Язык</td><td>Java</td><td>17+</td><td>LTS, record patterns, sealed classes</td></tr>
+                <tr><td>Фреймворк</td><td>Spring Boot</td><td>3.5.x</td><td>Актуальная стабильная версия</td></tr>
+                <tr><td>БД</td><td>PostgreSQL</td><td>15+</td><td>Надёжная, JSONB, оконные функции</td></tr>
+                <tr><td>ORM</td><td>Hibernate</td><td>6.x</td><td>JPA реализация</td></tr>
+                <tr><td>Миграции БД</td><td>Liquibase</td><td>4.x</td><td>Версионирование схемы</td></tr>
+                <tr><td>Кэш</td><td>Redis</td><td>7.x</td><td>Сессии, кэширование аналитики</td></tr>
+                <tr><td>Контейнеры</td><td>Docker</td><td>24+</td><td>Изоляция окружения</td></tr>
+            </table>
+
+            <h3>Библиотеки</h3>
+            <table>
+                <tr><th>Назначение</th><th>Библиотека</th></tr>
+                <tr><td>JWT</td><td>io.jsonwebtoken:jjwt</td></tr>
+                <tr><td>Валидация</td><td>spring-boot-starter-validation</td></tr>
+                <tr><td>Lombok</td><td>org.projectlombok:lombok</td></tr>
+                <tr><td>Excel</td><td>org.apache.poi:poi-ooxml</td></tr>
+                <tr><td>Тесты</td><td>spring-boot-starter-test, Testcontainers</td></tr>
+                <tr><td>Документирование API</td><td>springdoc-openapi-starter-webmvc-ui</td></tr>
+            </table>
+
+            <h3>Структура зависимостей (pom.xml)</h3>
+            <pre>&lt;dependencies&gt;
+    &lt;!-- Core --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-validation&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-data-redis&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- Database --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.postgresql&lt;/groupId&gt;
+        &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
+        &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.liquibase&lt;/groupId&gt;
+        &lt;artifactId&gt;liquibase-core&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- JWT --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;io.jsonwebtoken&lt;/groupId&gt;
+        &lt;artifactId&gt;jjwt-api&lt;/artifactId&gt;
+        &lt;version&gt;0.12.3&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;io.jsonwebtoken&lt;/groupId&gt;
+        &lt;artifactId&gt;jjwt-impl&lt;/artifactId&gt;
+        &lt;version&gt;0.12.3&lt;/version&gt;
+        &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;io.jsonwebtoken&lt;/groupId&gt;
+        &lt;artifactId&gt;jjwt-jackson&lt;/artifactId&gt;
+        &lt;version&gt;0.12.3&lt;/version&gt;
+        &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- Excel --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.apache.poi&lt;/groupId&gt;
+        &lt;artifactId&gt;poi-ooxml&lt;/artifactId&gt;
+        &lt;version&gt;5.3.0&lt;/version&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- Lombok --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+        &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+        &lt;optional&gt;true&lt;/optional&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- Swagger/OpenAPI --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springdoc&lt;/groupId&gt;
+        &lt;artifactId&gt;springdoc-openapi-starter-webmvc-ui&lt;/artifactId&gt;
+        &lt;version&gt;2.3.0&lt;/version&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- Test --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.security&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-security-test&lt;/artifactId&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.testcontainers&lt;/groupId&gt;
+        &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.testcontainers&lt;/groupId&gt;
+        &lt;artifactId&gt;junit-jupiter&lt;/artifactId&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;</pre>
+        </section>
+
+        <section id="database">
+            <h2>Модель данных</h2>
+
+            <h3>ER-диаграмма</h3>
+            <div class="diagram">
+USER ||--o{ TRANSACTION : "has many"
+USER ||--o{ CATEGORY : "has many"
+USER ||--o{ GOAL : "has many"
+CATEGORY ||--o{ CATEGORY : "parent-child"
+CATEGORY ||--o{ TRANSACTION : "categorizes"
+
+USER {
+    bigint id PK
+    varchar email UK
+    varchar password_hash
+    varchar name
+    timestamp created_at
+    timestamp updated_at
+}
+
+CATEGORY {
+    bigint id PK
+    bigint user_id FK
+    varchar name
+    bigint parent_id FK
+    enum type "INCOME|EXPENSE"
+    timestamp created_at
+}
+
+TRANSACTION {
+    bigint id PK
+    bigint user_id FK
+    bigint category_id FK
+    decimal amount
+    timestamp date
+    varchar description
+    timestamp created_at
+    timestamp updated_at
+}
+
+GOAL {
+    bigint id PK
+    bigint user_id FK
+    varchar name
+    decimal target_amount
+    decimal current_amount
+    date deadline
+    enum status "ACTIVE|COMPLETED|CANCELLED"
+    timestamp created_at
+    timestamp updated_at
+}
+            </div>
+
+            <h3>Описание таблиц</h3>
+
+            <h4>Таблица: users</h4>
+            <table>
+                <tr><th>Колонка</th><th>Тип</th><th>Ограничения</th><th>Описание</th></tr>
+                <tr><td>id</td><td>BIGINT</td><td>PRIMARY KEY, AUTO_INCREMENT</td><td>ID пользователя</td></tr>
+                <tr><td>email</td><td>VARCHAR(255)</td><td>UNIQUE, NOT NULL</td><td>Email (логин)</td></tr>
+                <tr><td>password_hash</td><td>VARCHAR(255)</td><td>NOT NULL</td><td>Хэш пароля (BCrypt)</td></tr>
+                <tr><td>name</td><td>VARCHAR(100)</td><td>NOT NULL</td><td>Имя пользователя</td></tr>
+                <tr><td>created_at</td><td>TIMESTAMP</td><td>NOT NULL, DEFAULT NOW()</td><td>Дата регистрации</td></tr>
+                <tr><td>updated_at</td><td>TIMESTAMP</td><td>NULL</td><td>Дата обновления профиля</td></tr>
+            </table>
+            <p><strong>Индексы:</strong> idx_users_email (email) — для поиска по email при аутентификации</p>
+
+            <h4>Таблица: categories</h4>
+            <table>
+                <tr><th>Колонка</th><th>Тип</th><th>Ограничения</th><th>Описание</th></tr>
+                <tr><td>id</td><td>BIGINT</td><td>PRIMARY KEY, AUTO_INCREMENT</td><td>ID категории</td></tr>
+                <tr><td>user_id</td><td>BIGINT</td><td>FOREIGN KEY → users(id), NOT NULL</td><td>Владелец категории</td></tr>
+                <tr><td>name</td><td>VARCHAR(100)</td><td>NOT NULL</td><td>Название категории</td></tr>
+                <tr><td>parent_id</td><td>BIGINT</td><td>FOREIGN KEY → categories(id), NULL</td><td>Родительская категория</td></tr>
+                <tr><td>type</td><td>ENUM('INCOME', 'EXPENSE')</td><td>NOT NULL</td><td>Тип категории</td></tr>
+                <tr><td>created_at</td><td>TIMESTAMP</td><td>NOT NULL, DEFAULT NOW()</td><td>Дата создания</td></tr>
+            </table>
+            <p><strong>Индексы:</strong> idx_categories_user_id, idx_categories_parent_id, idx_categories_type, idx_categories_user_type (составной)</p>
+            <p><strong>Ограничения:</strong> Уникальность (name, parent_id, user_id) — запрет дубликатов в рамках одного родителя</p>
+
+            <h4>Таблица: transactions</h4>
+            <table>
+                <tr><th>Колонка</th><th>Тип</th><th>Ограничения</th><th>Описание</th></tr>
+                <tr><td>id</td><td>BIGINT</td><td>PRIMARY KEY, AUTO_INCREMENT</td><td>ID транзакции</td></tr>
+                <tr><td>user_id</td><td>BIGINT</td><td>FOREIGN KEY → users(id), NOT NULL</td><td>Владелец транзакции</td></tr>
+                <tr><td>category_id</td><td>BIGINT</td><td>FOREIGN KEY → categories(id), NOT NULL</td><td>Категория</td></tr>
+                <tr><td>amount</td><td>DECIMAL(19,2)</td><td>NOT NULL, CHECK (amount > 0)</td><td>Сумма</td></tr>
+                <tr><td>date</td><td>TIMESTAMP</td><td>NOT NULL</td><td>Дата операции</td></tr>
+                <tr><td>description</td><td>VARCHAR(500)</td><td>NULL</td><td>Описание</td></tr>
+                <tr><td>created_at</td><td>TIMESTAMP</td><td>NOT NULL, DEFAULT NOW()</td><td>Дата создания записи</td></tr>
+                <tr><td>updated_at</td><td>TIMESTAMP</td><td>NULL</td><td>Дата изменения записи</td></tr>
+            </table>
+            <p><strong>Индексы:</strong> idx_transactions_user_id, idx_transactions_date, idx_transactions_category_id, idx_transactions_user_date (составной)</p>
+
+            <h4>Таблица: goals</h4>
+            <table>
+                <tr><th>Колонка</th><th>Тип</th><th>Ограничения</th><th>Описание</th></tr>
+                <tr><td>id</td><td>BIGINT</td><td>PRIMARY KEY, AUTO_INCREMENT</td><td>ID цели</td></tr>
+                <tr><td>user_id</td><td>BIGINT</td><td>FOREIGN KEY → users(id), NOT NULL</td><td>Владелец цели</td></tr>
+                <tr><td>name</td><td>VARCHAR(200)</td><td>NOT NULL</td><td>Название цели</td></tr>
+                <tr><td>target_amount</td><td>DECIMAL(19,2)</td><td>NOT NULL, CHECK (target_amount > 0)</td><td>Целевая сумма</td></tr>
+                <tr><td>current_amount</td><td>DECIMAL(19,2)</td><td>NOT NULL, DEFAULT 0, CHECK (current_amount >= 0)</td><td>Текущая сумма</td></tr>
+                <tr><td>deadline</td><td>DATE</td><td>NULL</td><td>Дедлайн достижения</td></tr>
+                <tr><td>status</td><td>ENUM('ACTIVE', 'COMPLETED', 'CANCELLED')</td><td>NOT NULL, DEFAULT 'ACTIVE'</td><td>Статус цели</td></tr>
+                <tr><td>created_at</td><td>TIMESTAMP</td><td>NOT NULL, DEFAULT NOW()</td><td>Дата создания</td></tr>
+                <tr><td>updated_at</td><td>TIMESTAMP</td><td>NULL</td><td>Дата обновления</td></tr>
+            </table>
+            <p><strong>Индексы:</strong> idx_goals_user_id, idx_goals_status</p>
+        </section>
+
+        <section id="api">
+            <h2>REST API спецификация</h2>
+
+            <div class="info-box">
+                <p><strong>Базовый URL:</strong></p>
+                <p>Production: <code>https://api.moneytracker.ru/api/v1</code></p>
+                <p>Development: <code>http://localhost:8080/api/v1</code></p>
+                <p><strong>Content-Type:</strong> <code>application/json</code></p>
+                <p><strong>Кодировка:</strong> UTF-8</p>
+            </div>
+
+            <h3>Универсальный формат ошибок</h3>
+            <pre>{
+  "timestamp": "2026-03-26T10:30:00.000Z",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Поле 'email' должно быть валидным email адресом",
+  "path": "/api/v1/auth/register",
+  "validationErrors": [
+    {
+      "field": "email",
+      "rejectedValue": "invalid-email",
+      "message": "должен быть в формате email"
+    }
+  ]
+}</pre>
+        </section>
+
+        <section id="api-auth">
+            <h2>1. Аутентификация и пользователи</h2>
+
+            <h3>1.1 Регистрация</h3>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/api/v1/auth/register</span>
+            </div>
+            <p><strong>Request Body:</strong></p>
+            <pre>{
+  "email": "user@example.com",
+  "password": "SecurePass123!",
+  "name": "Иван Петров"
+}</pre>
+            <p><strong>Валидация:</strong></p>
+            <table>
+                <tr><th>Поле</th><th>Правила</th></tr>
+                <tr><td>email</td><td>required, email format, max 255</td></tr>
+                <tr><td>password</td><td>required, min 8, max 100, хотя бы 1 буква, 1 цифра</td></tr>
+                <tr><td>name</td><td>required, min 2, max 100</td></tr>
+            </table>
+            <p><strong>Response 201 Created:</strong></p>
+            <pre>{
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4...",
+  "tokenType": "Bearer",
+  "expiresIn": 900,
+  "user": {
+    "id": 1,
+    "email": "user@example.com",
+    "name": "Иван Петров"
+  }
+}</pre>
+            <p><strong>Response 409 Conflict (email занят):</strong></p>
+            <pre>{
+  "timestamp": "2026-03-26T10:30:00.000Z",
+  "status": 409,
+  "error": "Conflict",
+  "message": "Пользователь с таким email уже существует",
+  "path": "/api/v1/auth/register"
+}</pre>
+
+            <h3>1.2 Вход (Login)</h3>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/api/v1/auth/login</span>
+            </div>
+            <p><strong>Request Body:</strong></p>
+            <pre>{
+  "email": "user@example.com",
+  "password": "SecurePass123!"
+}</pre>
+            <p><strong>Response 200 OK:</strong></p>
+            <pre>{
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4...",
+  "tokenType": "Bearer",
+  "expiresIn": 900,
+  "user": {
+    "id": 1,
+    "email": "user@example.com",
+    "name": "Иван Петров"
+  }
+}</pre>
+            <p><strong>Response 401 Unauthorized:</strong></p>
+            <pre>{
+  "timestamp": "2026-03-26T10:30:00.000Z",
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "Неверный email или пароль",
+  "path": "/api/v1/auth/login"
+}</pre>
+
+            <h3>1.3 Обновление токена (Refresh)</h3>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/api/v1/auth/refresh</span>
+            </div>
+            <p><strong>Request Body:</strong></p>
+            <pre>{
+  "refreshToken": "dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4..."
+}</pre>
+            <p><strong>Response 200 OK:</strong></p>
+            <pre>{
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expiresIn": 900
+}</pre>
+
+            <h3>1.4 Выход (Logout)</h3>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/api/v1/auth/logout</span>
+            </div>
+            <p><strong>Headers:</strong> <code>Authorization: Bearer &lt;accessToken&gt;</code></p>
+            <p><strong>Response 204 No Content</strong></p>
+
+            <h3>1.5 Получение профиля</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/api/v1/users/me</span>
+            </div>
+            <p><strong>Headers:</strong> <code>Authorization: Bearer &lt;accessToken&gt;</code></p>
+            <p><strong>Response 200 OK:</strong></p>
+            <pre>{
+  "id": 1,
+  "email": "user@example.com",
+  "name": "Иван Петров",
+  "createdAt": "2026-01-15T08:00:00.000Z"
+}</pre>
+
+            <h3>1.6 Обновление профиля</h3>
+            <div class="endpoint">
+                <span class="method method-put">PUT</span>
+                <span class="path">/api/v1/users/me</span>
+            </div>
+            <p><strong>Request Body:</strong></p>
+            <pre>{
+  "name": "Иван Иванович Петров"
+}</pre>
+
+            <h3>1.7 Смена пароля</h3>
+            <div class="endpoint">
+                <span class="method method-put">PUT</span>
+                <span class="path">/api/v1/users/me/password</span>
+            </div>
+            <p><strong>Request Body:</strong></p>
+            <pre>{
+  "currentPassword": "OldPass123!",
+  "newPassword": "NewSecurePass456!"
+}</pre>
+        </section>
+
+        <section id="api-categories">
+            <h2>2. Категории</h2>
+
+            <h3>2.1 Создание категории</h3>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/api/v1/categories</span>
+            </div>
+            <p><strong>Headers:</strong> <code>Authorization: Bearer &lt;accessToken&gt;</code></p>
+            <p><strong>Request Body:</strong></p>
+            <pre>{
+  "name": "Продукты",
+  "type": "EXPENSE",
+  "parentId": null
+}</pre>
+            <p><strong>Валидация:</strong></p>
+            <table>
+                <tr><th>Поле</th><th>Правила</th></tr>
+                <tr><td>name</td><td>required, min 1, max 100</td></tr>
+                <tr><td>type</td><td>required, enum: INCOME, EXPENSE</td></tr>
+                <tr><td>parentId</td><td>optional, должен существовать и принадлежать пользователю</td></tr>
+            </table>
+            <p><strong>Response 201 Created:</strong></p>
+            <pre>{
+  "id": 1,
+  "name": "Продукты",
+  "type": "EXPENSE",
+  "parent": null,
+  "createdAt": "2026-03-26T10:30:00.000Z"
+}</pre>
+
+            <h3>2.2 Список категорий</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/api/v1/categories</span>
+            </div>
+            <p><strong>Query Parameters:</strong></p>
+            <table>
+                <tr><th>Параметр</th><th>Тип</th><th>Описание</th></tr>
+                <tr><td>type</td><td>enum</td><td>Фильтр по типу (INCOME, EXPENSE)</td></tr>
+                <tr><td>parentId</td><td>long</td><td>Фильтр по родителю (только дочерние)</td></tr>
+                <tr><td>includeChildren</td><td>boolean</td><td>Включить вложенные (default: false)</td></tr>
+            </table>
+
+            <h3>2.3 Получение категории</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/api/v1/categories/{id}</span>
+            </div>
+
+            <h3>2.4 Обновление категории</h3>
+            <div class="endpoint">
+                <span class="method method-put">PUT</span>
+                <span class="path">/api/v1/categories/{id}</span>
+            </div>
+
+            <h3>2.5 Удаление категории</h3>
+            <div class="endpoint">
+                <span class="method method-delete">DELETE</span>
+                <span class="path">/api/v1/categories/{id}</span>
+            </div>
+            <p><strong>Response 400 Bad Request (категория используется):</strong></p>
+            <pre>{
+  "timestamp": "2026-03-26T10:30:00.000Z",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Невозможно удалить категорию: она используется в 5 транзакциях",
+  "path": "/api/v1/categories/1"
+}</pre>
+        </section>
+
+        <section id="api-transactions">
+            <h2>3. Транзакции</h2>
+
+            <h3>3.1 Создание транзакции</h3>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/api/v1/transactions</span>
+            </div>
+            <p><strong>Headers:</strong> <code>Authorization: Bearer &lt;accessToken&gt;</code></p>
+            <p><strong>Request Body:</strong></p>
+            <pre>{
+  "amount": 1500.50,
+  "categoryId": 1,
+  "date": "2026-03-26T10:30:00",
+  "description": "Покупка в супермаркете"
+}</pre>
+            <p><strong>Валидация:</strong></p>
+            <table>
+                <tr><th>Поле</th><th>Правила</th></tr>
+                <tr><td>amount</td><td>required, positive, max 10000000, 2 знака после запятой</td></tr>
+                <tr><td>categoryId</td><td>required, должна существовать</td></tr>
+                <tr><td>date</td><td>required, не в будущем (опционально)</td></tr>
+                <tr><td>description</td><td>optional, max 500</td></tr>
+            </table>
+            <p><strong>Response 201 Created:</strong></p>
+            <pre>{
+  "id": 1,
+  "amount": 1500.50,
+  "category": {
+    "id": 1,
+    "name": "Продукты",
+    "type": "EXPENSE"
+  },
+  "date": "2026-03-26T10:30:00.000Z",
+  "description": "Покупка в супермаркете",
+  "type": "EXPENSE",
+  "createdAt": "2026-03-26T10:30:00.000Z"
+}</pre>
+
+            <h3>3.2 Список транзакций (с фильтрацией и пагинацией)</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/api/v1/transactions</span>
+            </div>
+            <p><strong>Query Parameters:</strong></p>
+            <table>
+                <tr><th>Параметр</th><th>Тип</th><th>Описание</th></tr>
+                <tr><td>startDate</td><td>date</td><td>Начало периода (ISO 8601)</td></tr>
+                <tr><td>endDate</td><td>date</td><td>Конец периода (ISO 8601)</td></tr>
+                <tr><td>categoryId</td><td>long</td><td>Фильтр по категории</td></tr>
+                <tr><td>type</td><td>enum</td><td>Фильтр по типу (INCOME, EXPENSE)</td></tr>
+                <tr><td>minAmount</td><td>decimal</td><td>Минимальная сумма</td></tr>
+                <tr><td>maxAmount</td><td>decimal</td><td>Максимальная сумма</td></tr>
+                <tr><td>search</td><td>string</td><td>Поиск по описанию</td></tr>
+                <tr><td>page</td><td>int</td><td>Номер страницы (default: 0)</td></tr>
+                <tr><td>size</td><td>int</td><td>Размер страницы (default: 20, max: 100)</td></tr>
+                <tr><td>sortBy</td><td>string</td><td>Сортировка: date, amount, createdAt</td></tr>
+                <tr><td>sortDir</td><td>enum</td><td>Направление: asc, desc (default: desc)</td></tr>
+            </table>
+
+            <h3>3.3 Получение транзакции</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/api/v1/transactions/{id}</span>
+            </div>
+
+            <h3>3.4 Обновление транзакции</h3>
+            <div class="endpoint">
+                <span class="method method-put">PUT</span>
+                <span class="path">/api/v1/transactions/{id}</span>
+            </div>
+
+            <h3>3.5 Удаление транзакции</h3>
+            <div class="endpoint">
+                <span class="method method-delete">DELETE</span>
+                <span class="path">/api/v1/transactions/{id}</span>
+            </div>
+        </section>
+
+        <section id="api-analytics">
+            <h2>4. Аналитика</h2>
+
+            <h3>4.1 Статистика расходов за период</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/api/v1/analytics/stats</span>
+            </div>
+            <p><strong>Query Parameters:</strong> startDate, endDate</p>
+            <p><strong>Response 200 OK:</strong></p>
+            <pre>{
+  "totalExpense": 45000.00,
+  "totalIncome": 80000.00,
+  "balance": 35000.00,
+  "transactionCount": 42,
+  "averageDailyExpense": 1500.00,
+  "period": {
+    "startDate": "2026-03-01",
+    "endDate": "2026-03-31",
+    "days": 31
+  }
+}</pre>
+
+            <h3>4.2 Сравнение периодов</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/api/v1/analytics/compare</span>
+            </div>
+            <p><strong>Response 200 OK:</strong></p>
+            <pre>{
+  "currentPeriod": {
+    "startDate": "2026-03-01",
+    "endDate": "2026-03-31",
+    "totalExpense": 45000.00,
+    "totalIncome": 80000.00,
+    "balance": 35000.00,
+    "transactionCount": 42
+  },
+  "previousPeriod": {
+    "startDate": "2026-02-01",
+    "endDate": "2026-02-28",
+    "totalExpense": 50000.00,
+    "totalIncome": 75000.00,
+    "balance": 25000.00,
+    "transactionCount": 38
+  },
+  "changes": {
+    "expenseChangePercent": -10.00,
+    "incomeChangePercent": 6.67,
+    "balanceChangePercent": 40.00
+  }
+}</pre>
+            <div class="info-box">
+                <p><strong>Интерпретация изменений:</strong></p>
+                <ul>
+                    <li><code>expenseChangePercent: -10.00</code> — расходы уменьшились на 10%</li>
+                    <li><code>incomeChangePercent: 6.67</code> — доходы выросли на 6.67%</li>
+                    <li><code>balanceChangePercent: 40.00</code> — баланс вырос на 40%</li>
+                </ul>
+            </div>
+
+            <h3>4.3 Накопительный график расходов</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/api/v1/analytics/cumulative</span>
+            </div>
+
+            <h3>4.4 Расходы по категориям</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/api/v1/analytics/by-category</span>
+            </div>
+
+            <h3>4.5 Динамика по месяцам</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/api/v1/analytics/monthly-trend</span>
+            </div>
+        </section>
+
+        <section id="api-goals">
+            <h2>5. Финансовые цели</h2>
+
+            <h3>5.1 Создание цели</h3>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/api/v1/goals</span>
+            </div>
+            <p><strong>Request Body:</strong></p>
+            <pre>{
+  "name": "Накопить на отпуск",
+  "targetAmount": 150000.00,
+  "deadline": "2026-12-31",
+  "initialAmount": 10000.00
+}</pre>
+            <p><strong>Валидация:</strong></p>
+            <table>
+                <tr><th>Поле</th><th>Правила</th></tr>
+                <tr><td>name</td><td>required, min 3, max 200</td></tr>
+                <tr><td>targetAmount</td><td>required, positive, max 100000000</td></tr>
+                <tr><td>deadline</td><td>optional, должна быть в будущем</td></tr>
+                <tr><td>initialAmount</td><td>optional, >= 0, &lt;= targetAmount</td></tr>
+            </table>
+            <p><strong>Response 201 Created:</strong></p>
+            <pre>{
+  "id": 1,
+  "name": "Накопить на отпуск",
+  "targetAmount": 150000.00,
+  "currentAmount": 10000.00,
+  "deadline": "2026-12-31",
+  "status": "ACTIVE",
+  "progressPercent": 6.67,
+  "remainingAmount": 140000.00,
+  "createdAt": "2026-03-26T10:30:00.000Z"
+}</pre>
+
+            <h3>5.2 Список целей</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/api/v1/goals</span>
+            </div>
+            <p><strong>Query Parameters:</strong> status (ACTIVE, COMPLETED, CANCELLED)</p>
+
+            <h3>5.3 Получение цели</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/api/v1/goals/{id}</span>
+            </div>
+
+            <h3>5.4 Обновление цели</h3>
+            <div class="endpoint">
+                <span class="method method-put">PUT</span>
+                <span class="path">/api/v1/goals/{id}</span>
+            </div>
+
+            <h3>5.5 Пополнение цели</h3>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/api/v1/goals/{id}/contribute</span>
+            </div>
+            <p><strong>Request Body:</strong></p>
+            <pre>{
+  "amount": 5000.00
+}</pre>
+
+            <h3>5.6 Удаление цели</h3>
+            <div class="endpoint">
+                <span class="method method-delete">DELETE</span>
+                <span class="path">/api/v1/goals/{id}</span>
+            </div>
+        </section>
+
+        <section id="api-import">
+            <h2>6. Импорт/экспорт</h2>
+
+            <h3>6.1 Импорт транзакций из Excel</h3>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/api/v1/import/excel</span>
+            </div>
+            <p><strong>Content-Type:</strong> <code>multipart/form-data</code></p>
+            <p><strong>Form Data:</strong></p>
+            <table>
+                <tr><th>Поле</th><th>Тип</th><th>Описание</th></tr>
+                <tr><td>file</td><td>file</td><td>Excel файл (.xlsx)</td></tr>
+                <tr><td>createCategories</td><td>boolean</td><td>Создавать категории, если не существуют (default: true)</td></tr>
+                <tr><td>defaultCategoryId</td><td>long</td><td>Категория по умолчанию для не распознанных</td></tr>
+            </table>
+            <p><strong>Формат Excel файла:</strong></p>
+            <table>
+                <tr><th>Column A</th><th>Column B</th><th>Column C</th><th>Column D</th></tr>
+                <tr><td><strong>Дата</strong></td><td><strong>Сумма</strong></td><td><strong>Категория</strong></td><td><strong>Описание</strong></td></tr>
+                <tr><td>2026-03-26</td><td>1500.50</td><td>Продукты</td><td>Покупка в супермаркете</td></tr>
+                <tr><td>2026-03-25</td><td>300.00</td><td>Транспорт</td><td>Метро</td></tr>
+            </table>
+            <p><strong>Response 200 OK:</strong></p>
+            <pre>{
+  "imported": 45,
+  "skipped": 3,
+  "errors": [
+    {
+      "row": 10,
+      "message": "Неверный формат даты в ячейке A10"
+    },
+    {
+      "row": 15,
+      "message": "Отрицательная сумма в ячейке B15"
+    }
+  ],
+  "categoriesCreated": [
+    { "name": "Продукты", "id": 1 },
+    { "name": "Транспорт", "id": 2 }
+  ]
+}</pre>
+
+            <h3>6.2 Экспорт транзакций в Excel</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/api/v1/export/excel</span>
+            </div>
+            <p><strong>Query Parameters:</strong> startDate, endDate</p>
+            <p><strong>Response:</strong> Файл .xlsx</p>
+
+            <h3>6.3 Шаблон для импорта</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/api/v1/import/template</span>
+            </div>
+        </section>
+
+        <section id="validation">
+            <h2>Валидация и обработка ошибок</h2>
+
+            <h3>Глобальный обработчик исключений</h3>
+            <pre>@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidation(MethodArgumentNotValidException ex) {
+        List&lt;ValidationError&gt; errors = ex.getBindingResult()
+            .getFieldErrors()
+            .stream()
+            .map(error -&gt; new ValidationError(
+                error.getField(),
+                error.getRejectedValue(),
+                error.getDefaultMessage()
+            ))
+            .toList();
+        
+        return new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.BAD_REQUEST.value(),
+            "Ошибка валидации",
+            errors
+        );
+    }
+
+    @ExceptionHandler(CategoryInUseException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleCategoryInUse(CategoryInUseException ex) {
+        return new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.BAD_REQUEST.value(),
+            ex.getMessage(),
+            null
+        );
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNotFound(EntityNotFoundException ex) {
+        return new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.NOT_FOUND.value(),
+            ex.getMessage(),
+            null
+        );
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleAuth(AuthenticationException ex) {
+        return new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.UNAUTHORIZED.value(),
+            "Ошибка аутентификации",
+            null
+        );
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleGeneric(Exception ex) {
+        log.error("Unexpected error", ex);
+        return new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            "Внутренняя ошибка сервера",
+            null
+        );
+    }
+}</pre>
+
+            <h3>Коды HTTP статусов</h3>
+            <table>
+                <tr><th>Код</th><th>Значение</th><th>Когда используется</th></tr>
+                <tr><td>200</td><td>OK</td><td>Успешный GET, PUT</td></tr>
+                <tr><td>201</td><td>Created</td><td>Успешный POST (создание ресурса)</td></tr>
+                <tr><td>204</td><td>No Content</td><td>Успешный DELETE</td></tr>
+                <tr><td>400</td><td>Bad Request</td><td>Ошибка валидации, бизнес-логика</td></tr>
+                <tr><td>401</td><td>Unauthorized</td><td>Нет токена, истёк, неверные credentials</td></tr>
+                <tr><td>403</td><td>Forbidden</td><td>Нет прав на ресурс (чужая транзакция)</td></tr>
+                <tr><td>404</td><td>Not Found</td><td>Ресурс не найден</td></tr>
+                <tr><td>409</td><td>Conflict</td><td>Дубликат (email, категория)</td></tr>
+                <tr><td>422</td><td>Unprocessable Entity</td><td>Ошибка логики (нельзя удалить используемую категорию)</td></tr>
+                <tr><td>500</td><td>Internal Server Error</td><td>Неожиданная ошибка сервера</td></tr>
+            </table>
+        </section>
+
+        <section id="infrastructure">
+            <h2>Инфраструктура и развёртывание</h2>
+
+            <h3>Docker Compose (development)</h3>
+            <pre>version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: moneytracker-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=moneytracker
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=your-secret-key-change-in-production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./backend/logs:/app/logs
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: moneytracker-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=moneytracker
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: moneytracker-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:</pre>
+
+            <h3>Dockerfile (backend)</h3>
+            <pre># Build stage
+FROM maven:3.9-eclipse-temurin-17 AS builder
+WORKDIR /build
+COPY pom.xml .
+RUN mvn dependency:go-offline
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# Runtime stage
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=builder /build/target/app.jar ./app.jar
+
+# Create non-root user
+RUN addgroup -g 1001 appgroup && \
+    adduser -u 1001 -G appgroup -D appuser
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
+    CMD wget -qO- http://localhost:8080/api/v1/health || exit 1
+
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]</pre>
+
+            <h3>Переменные окружения</h3>
+            <table>
+                <tr><th>Переменная</th><th>Описание</th><th>Default</th><th>Required</th></tr>
+                <tr><td>SPRING_PROFILES_ACTIVE</td><td>Профиль Spring</td><td>dev</td><td>Нет</td></tr>
+                <tr><td>DB_HOST</td><td>Хост PostgreSQL</td><td>localhost</td><td>Да</td></tr>
+                <tr><td>DB_PORT</td><td>Порт PostgreSQL</td><td>5432</td><td>Да</td></tr>
+                <tr><td>DB_NAME</td><td>Имя БД</td><td>moneytracker</td><td>Да</td></tr>
+                <tr><td>DB_USER</td><td>Пользователь БД</td><td>postgres</td><td>Да</td></tr>
+                <tr><td>DB_PASSWORD</td><td>Пароль БД</td><td>postgres</td><td>Да</td></tr>
+                <tr><td>REDIS_HOST</td><td>Хост Redis</td><td>localhost</td><td>Да</td></tr>
+                <tr><td>REDIS_PORT</td><td>Порт Redis</td><td>6379</td><td>Да</td></tr>
+                <tr><td>JWT_SECRET</td><td>Секретный ключ JWT</td><td>-</td><td>Да</td></tr>
+                <tr><td>JWT_EXPIRATION</td><td>Время жизни access токена (мс)</td><td>900000</td><td>Нет</td></tr>
+                <tr><td>JWT_REFRESH_EXPIRATION</td><td>Время жизни refresh токена (мс)</td><td>604800000</td><td>Нет</td></tr>
+            </table>
+        </section>
+
+        <section id="plan">
+            <h2>План разработки</h2>
+
+            <h3>Этап 1: Настройка проекта (2-3 дня)</h3>
+            <ul>
+                <li>☐ Инициализация Spring Boot проекта (или обновление существующего)</li>
+                <li>☐ Настройка pom.xml со всеми зависимостями</li>
+                <li>☐ Настройка application.yml (dev/prod профили)</li>
+                <li>☐ Настройка Docker Compose (PostgreSQL, Redis)</li>
+                <li>☐ Создание первого changelog Liquibase</li>
+                <li>☐ Настройка Swagger UI</li>
+            </ul>
+
+            <h3>Этап 2: Модели и репозитории (2-3 дня)</h3>
+            <ul>
+                <li>☐ Entity: User, Category, Transaction, Goal</li>
+                <li>☐ Repository interfaces с custom queries</li>
+                <li>☐ Entity projections для аналитики</li>
+                <li>☐ Индексы и ограничения в Liquibase</li>
+                <li>☐ Unit-тесты репозиториев (Testcontainers)</li>
+            </ul>
+
+            <h3>Этап 3: Безопасность (2-3 дня)</h3>
+            <ul>
+                <li>☐ Spring Security конфигурация</li>
+                <li>☐ JWT Filter для обработки токенов</li>
+                <li>☐ JwtTokenProvider (generate, validate, extract claims)</li>
+                <li>☐ UserDetailsService реализация</li>
+                <li>☐ AuthController (register, login, refresh, logout)</li>
+                <li>☐ Unit-тесты безопасности</li>
+            </ul>
+
+            <h3>Этап 4: Сервисы категорий и транзакций (3-4 дня)</h3>
+            <ul>
+                <li>☐ CategoryService (CRUD, валидация иерархии)</li>
+                <li>☐ TransactionService (CRUD, фильтрация)</li>
+                <li>☐ CategoryController</li>
+                <li>☐ TransactionController</li>
+                <li>☐ Integration-тесты API</li>
+            </ul>
+
+            <h3>Этап 5: Аналитика (2-3 дня)</h3>
+            <ul>
+                <li>☐ AnalyticsService (статистика, сравнение, группировки)</li>
+                <li>☐ AnalyticsController</li>
+                <li>☐ Оптимизация SQL запросов (индексы, projection)</li>
+                <li>☐ Кэширование аналитики в Redis (опционально)</li>
+                <li>☐ Unit-тесты сервисов аналитики</li>
+            </ul>
+
+            <h3>Этап 6: Финансовые цели (2-3 дня)</h3>
+            <ul>
+                <li>☐ Goal entity и repository</li>
+                <li>☐ GoalService (CRUD, расчёт прогресса, пополнение)</li>
+                <li>☐ GoalController</li>
+                <li>☐ Unit-тесты логики целей</li>
+            </ul>
+
+            <h3>Этап 7: Импорт/экспорт (2-3 дня)</h3>
+            <ul>
+                <li>☐ ExcelImportService (парсинг .xlsx)</li>
+                <li>☐ ExcelExportService (генерация .xlsx)</li>
+                <li>☐ ImportController</li>
+                <li>☐ ExportController</li>
+                <li>☐ Integration-тесты импорта</li>
+            </ul>
+
+            <h3>Этап 8: Обработка ошибок и валидация (1-2 дня)</h3>
+            <ul>
+                <li>☐ GlobalExceptionHandler</li>
+                <li>☐ Custom exceptions (CategoryInUseException, etc.)</li>
+                <li>☐ DTO валидация (@Valid, custom validators)</li>
+                <li>☐ Unit-тесты обработчиков</li>
+            </ul>
+
+            <h3>Этап 9: Тестирование (3-4 дня)</h3>
+            <ul>
+                <li>☐ Unit-тесты сервисов (покрытие >80%)</li>
+                <li>☐ Integration-тесты контроллеров</li>
+                <li>☐ Integration-тесты с Testcontainers</li>
+                <li>☐ API contract tests</li>
+                <li>☐ Load tests (опционально)</li>
+            </ul>
+
+            <h3>Этап 10: Документирование и деплой (2-3 дня)</h3>
+            <ul>
+                <li>☐ Swagger документация (OpenAPI annotations)</li>
+                <li>☐ README с инструкциями</li>
+                <li>☐ Production Docker Compose</li>
+                <li>☐ Nginx конфигурация</li>
+                <li>☐ CI/CD pipeline (GitHub Actions / GitLab CI)</li>
+                <li>☐ Deploy на сервер</li>
+            </ul>
+
+            <div class="success-box">
+                <p><strong>Итого: ~25-35 рабочих дней</strong></p>
+            </div>
+        </section>
+
+        <section id="checklist">
+            <h2>Чеклист самопроверки</h2>
+
+            <h3>🔒 Безопасность</h3>
+            <ul>
+                <li>☐ Пароли хэшируются BCrypt (strength >= 10)</li>
+                <li>☐ JWT secret хранится в environment variables</li>
+                <li>☐ Access токен имеет короткое время жизни (15 мин)</li>
+                <li>☐ Refresh токен имеет длительное время жизни (7 дней)</li>
+                <li>☐ Все эндпоинты кроме auth защищены</li>
+                <li>☐ Проверка прав доступа (пользователь видит только свои данные)</li>
+                <li>☐ SQL injection защищены (JPA parameters)</li>
+                <li>☐ XSS защищены (санитайзинг вывода)</li>
+            </ul>
+
+            <h3>✅ Валидация</h3>
+            <ul>
+                <li>☐ Все входные DTO валидируются (@Valid)</li>
+                <li>☐ Проверка на null/empty для обязательных полей</li>
+                <li>☐ Проверка форматов (email, date)</li>
+                <li>☐ Проверка диапазонов (min/max для sum)</li>
+                <li>☐ Проверка уникальности (email, категория)</li>
+                <li>☐ Проверка бизнес-правил (категория того же типа)</li>
+            </ul>
+
+            <h3>⚠️ Обработка ошибок</h3>
+            <ul>
+                <li>☐ Единый формат ошибок (timestamp, status, message, path)</li>
+                <li>☐ Детализация ошибок валидации (поле, значение, сообщение)</li>
+                <li>☐ Логируются все ошибки 5xx</li>
+                <li>☐ Не утекают стектрейсы в production</li>
+                <li>☐ Корректные HTTP статусы (400, 401, 404, 409, 500)</li>
+            </ul>
+
+            <h3>🔄 Транзакционность</h3>
+            <ul>
+                <li>☐ @Transactional на сервисах (write операции)</li>
+                <li>☐ @Transactional(readOnly = true) на read методах</li>
+                <li>☐ Откат транзакции при исключениях</li>
+                <li>☐ Нет N+1 запросов (JOIN FETCH, EntityGraph)</li>
+            </ul>
+
+            <h3>💾 База данных</h3>
+            <ul>
+                <li>☐ Все таблицы имеют первичные ключи</li>
+                <li>☐ Foreign keys с правильными действиями (CASCADE, RESTRICT)</li>
+                <li>☐ Индексы на часто используемых полях (user_id, date)</li>
+                <li>☐ Составные индексы для фильтрации (user_id, date)</li>
+                <li>☐ Liquibase миграции идемпотентны</li>
+                <li>☐ Есть индексы для UNIQUE constraints</li>
+            </ul>
+
+            <h3>⚡ Производительность</h3>
+            <ul>
+                <li>☐ Пагинация для списков (Pageable)</li>
+                <li>☐ Ограничение max размера страницы</li>
+                <li>☐ Кэширование частых запросов (Redis)</li>
+                <li>☐ Нет утечек памяти (Stream API, большие файлы)</li>
+                <li>☐ Connection pool настроен (HikariCP)</li>
+            </ul>
+
+            <h3>🧪 Тестирование</h3>
+            <ul>
+                <li>☐ Unit-тесты сервисов (mock repositories)</li>
+                <li>☐ Integration-тесты контроллеров (@SpringBootTest)</li>
+                <li>☐ Integration-тесты с Testcontainers (реальная БД)</li>
+                <li>☐ Покрытие кода тестами >80%</li>
+                <li>☐ Тесты на граничные случаи (пустые данные, большие суммы)</li>
+            </ul>
+
+            <h3>📝 Логирование</h3>
+            <ul>
+                <li>☐ Логируются важные операции (вход, создание транзакции)</li>
+                <li>☐ Логируются ошибки (stack trace)</li>
+                <li>☐ Нет чувствительных данных в логах (пароли, токены)</li>
+                <li>☐ Разные уровни логирования (INFO, WARN, ERROR)</li>
+            </ul>
+
+            <h3>📚 Документация</h3>
+            <ul>
+                <li>☐ Swagger UI доступен (/swagger-ui.html)</li>
+                <li>☐ Все эндпоинты описаны (@Operation, @ApiResponse)</li>
+                <li>☐ Примеры запросов/ответов в документации</li>
+                <li>☐ README с инструкцией по запуску</li>
+            </ul>
+
+            <h3>🚀 Деплой</h3>
+            <ul>
+                <li>☐ Docker образ минимального размера (multi-stage build)</li>
+                <li>☐ Приложение запускается от non-root пользователя</li>
+                <li>☐ Health check endpoint (/api/v1/health)</li>
+                <li>☐ Graceful shutdown настроен</li>
+                <li>☐ Environment variables для всех секретов</li>
+                <li>☐ Production Docker Compose с restart policy</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p><strong>Документ создан:</strong> 2026-03-26</p>
+            <p><strong>Версия:</strong> 1.0</p>
+            <p><strong>Автор:</strong> AI Assistant</p>
+        </footer>
+    </div>
+</body>
+</html>

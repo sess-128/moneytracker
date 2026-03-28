@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2026-03-28-01-recreate-indexes" author="andrew">
+        <comment>Recreate indexes for transactions table</comment>
+
+        <!-- Удаляем старые индексы -->
+        <dropIndex tableName="transactions" indexName="idx_transactions_category_id"/>
+        <dropIndex tableName="transactions" indexName="idx_transactions_date"/>
+
+        <!-- Создаём оптимизированные индексы -->
+        <createIndex tableName="transactions" indexName="idx_transactions_category_date">
+            <column name="category_id"/>
+            <column name="date"/>
+        </createIndex>
+
+    </changeSet>
+</databaseChangeLog>

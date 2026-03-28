@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!--
+        v1.1.1: Добавление user_id в категории и транзакции (как nullable)
+
+        Стратегия:
+        - Добавляем колонки user_id как nullable (не ломает существующие данные)
+        - Добавляем индексы для производительности
+        - Добавляем created_at в категории
+        - Внешние ключи пока НЕ добавляем (пользователи ещё не созданы)
+
+        После применения миграции:
+        1. Создайте первого пользователя через API регистрации
+        2. Запустите скрипт привязки существующих данных (data-migration.sql)
+        3. Примените миграцию v1.1.2 для добавления NOT NULL и FK
+    -->
+
+    <include file="2026-03-28--01-add-user-id-to-categories.xml" relativeToChangelogFile="true"/>
+    <include file="2026-03-28--02-add-user-id-to-transactions.xml" relativeToChangelogFile="true"/>
+    <include file="2026-03-28--03-add-created-at-to-categories.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2026-03-28-01-add-user-id-to-categories" author="andrew">
+        <comment>Add user_id column to categories table (nullable)</comment>
+
+        <!-- Добавляем колонку user_id как nullable -->
+        <addColumn tableName="categories">
+            <column name="user_id" type="bigint"/>
+        </addColumn>
+
+        <!-- Добавляем индекс для производительности -->
+        <createIndex tableName="categories" indexName="idx_categories_user_id">
+            <column name="user_id"/>
+        </createIndex>
+
+    </changeSet>
+</databaseChangeLog>

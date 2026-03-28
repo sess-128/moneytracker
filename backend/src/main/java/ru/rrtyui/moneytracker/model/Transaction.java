@@ -9,7 +9,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,26 +31,42 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, precision = 19, scale = 2)
-    private BigDecimal amount;
-
-    @Column(nullable = false)
-    private LocalDateTime date;
-
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @NotNull
+    private MTUser user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
+    @NotNull
     private Category category;
 
+    @Column(nullable = false, precision = 10, scale = 2)
+    @NotNull
+    private BigDecimal amount;
+
+    @Column(nullable = false)
+    @NotNull
+    private LocalDateTime date;
+
+    @Column(name = "description")
     private String description;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "update_at", nullable = false)
+    private LocalDateTime updateAt;
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
 
+    @PreUpdate
+    protected void onUpdate() {
+        this.updateAt = LocalDateTime.now();
+    }
     /*TODO: возможно стоит пересмотреть структуру модели, чтобы логика определения типа транзкакции либо не учавствовала вовсе
     либо не зависила от категории, а устанавливалась в маппере например
      */
@@ -56,3 +74,4 @@ public class Transaction {
         return this.category.getType().name();
     }
 }
+

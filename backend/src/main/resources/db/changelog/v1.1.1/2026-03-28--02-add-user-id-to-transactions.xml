@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2026-03-28-01-add-user-id-to-transactions" author="andrew">
+        <comment>Add user_id column to transactions table (nullable)</comment>
+
+        <!-- Добавляем колонку user_id как nullable -->
+        <addColumn tableName="transactions">
+            <column name="user_id" type="bigint"/>
+        </addColumn>
+
+        <!-- Добавляем колонку update_at если её нет -->
+        <addColumn tableName="transactions">
+            <column name="update_at" type="timestamp"/>
+        </addColumn>
+
+        <!-- Добавляем индексы для производительности -->
+        <createIndex tableName="transactions" indexName="idx_transactions_user_id">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex tableName="transactions" indexName="idx_transactions_user_date">
+            <column name="user_id"/>
+            <column name="date"/>
+        </createIndex>
+
+    </changeSet>
+</databaseChangeLog>

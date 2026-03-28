@@ -13,21 +13,6 @@ import java.util.List;
 @Slf4j
 public class TransactionSpecifications {
 
-    public static Specification<Transaction> hasCategoryId(Long categoryId) {
-        return (root, query, cb) ->
-                categoryId == null ? null : cb.equal(root.join("category").get("id"), categoryId);
-    }
-
-    public static Specification<Transaction> dateAfter(LocalDateTime from) {
-        return (root, query, cb) ->
-                from == null ? null : cb.greaterThanOrEqualTo(root.get("date"), from);
-    }
-
-    public static Specification<Transaction> dateBefore(LocalDateTime to) {
-        return (root, query, cb) ->
-                to == null ? null : cb.lessThanOrEqualTo(root.get("date"), to);
-    }
-
     public static Specification<Transaction> dateBetween(LocalDate start, LocalDate end) {
         // Используем дефолтные даты вместо null для корректной работы SQL
         LocalDateTime startDate = start != null ? start.atStartOfDay() : LocalDateTime.of(1970, 1, 1, 0, 0);
