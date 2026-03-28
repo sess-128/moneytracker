@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2026-03-28-02-add-created-at-to-categories" author="andrew">
+        <comment>Add created_at column to categories table</comment>
+
+        <!-- Добавляем колонку created_at как nullable -->
+        <addColumn tableName="categories">
+            <column name="created_at" type="timestamp"/>
+        </addColumn>
+
+        <!-- Заполняем NULL значения текущим временем -->
+        <update tableName="categories">
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <where>created_at IS NULL</where>
+        </update>
+
+        <!-- Делаем NOT NULL -->
+        <addNotNullConstraint
+                tableName="categories"
+                columnName="created_at"
+                columnDataType="timestamp"/>
+
+    </changeSet>
+</databaseChangeLog>

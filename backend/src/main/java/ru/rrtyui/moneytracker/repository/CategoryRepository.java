@@ -6,22 +6,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.rrtyui.moneytracker.dto.category.CategoryItemDto;
 import ru.rrtyui.moneytracker.model.Category;
-import ru.rrtyui.moneytracker.model.CategoryType;
 
 import java.util.List;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    @Query("SELECT c FROM Category c LEFT JOIN FETCH c.parent WHERE c.parent IS NULL")
-    List<Category> findByParentIsNull();
-    void find
-
-    List<Category> findByType(CategoryType type);
-
     boolean existsByParentId(Long parentId);
 
-    @Query("SELECT new ru.rrtyui.moneytracker.dto.CategoryItemDto(" +
+    @Query("SELECT new ru.rrtyui.moneytracker.dto.category.CategoryItemDto(" +
             "c.id, c.name, null, " +
             "CASE WHEN COUNT(c2) > 0 THEN true ELSE false END, " +
             "cast(c.type as string)) " + // Берем реальный тип
@@ -31,7 +24,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             "GROUP BY c.id, c.name, c.type")
     List<CategoryItemDto> findRootCategoryItems();
 
-    @Query("SELECT new ru.rrtyui.moneytracker.dto.CategoryItemDto(" +
+    @Query("SELECT new ru.rrtyui.moneytracker.dto.category.CategoryItemDto(" +
             "c.id, c.name, c.parent.id, " +
             "CASE WHEN COUNT(c2) > 0 THEN true ELSE false END, " +
             "cast(c.type as string)) " +
@@ -60,7 +53,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     long countCyclePath(@Param("potentialParentId") Long potentialParentId,
                         @Param("candidateChildId") Long candidateChildId);
 
-    @Query("SELECT new ru.rrtyui.moneytracker.dto.CategoryItemDto(" +
+    @Query("SELECT new ru.rrtyui.moneytracker.dto.category.CategoryItemDto(" +
             "c.id, c.name, c.parent.id, " +
             "false, " +  // у листьев нет детей
             "cast(c.type as string)) " +
@@ -68,10 +61,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             "WHERE NOT EXISTS (SELECT 1 FROM Category child WHERE child.parent = c)")
     List<CategoryItemDto> findAllLeafCategoryItems();
 
-    @Query("SELECT c FROM Category c LEFT JOIN FETCH c.parent ORDER BY c.type, c.name")
-    List<Category> findAllSorted();
-
-    @Query("SELECT new ru.rrtyui.moneytracker.dto.CategoryItemDto(" +
+    @Query("SELECT new ru.rrtyui.moneytracker.dto.category.CategoryItemDto(" +
             "c.id, c.name, c.parent.id, " +
             "CASE WHEN COUNT(c2) > 0 THEN true ELSE false END, " +
             "cast(c.type as string)) " +

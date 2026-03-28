@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- 
+        v1.1.2: Завершение миграции данных
+        
+        Требования перед применением:
+        - Как минимум один пользователь должен существовать в таблице users
+        - Скрипт data-migration.sql должен быть выполнен (привязка старых данных)
+        
+        Изменения:
+        - Делаем user_id NOT NULL
+        - Добавляем внешние ключи
+        - Добавляем финальные индексы
+    -->
+
+    <include file="2026-03-28--01-make-user-id-not-null.xml" relativeToChangelogFile="true"/>
+    <include file="2026-03-28--02-add-foreign-keys.xml" relativeToChangelogFile="true"/>
+    <include file="2026-03-28--03-recreate-indexes.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

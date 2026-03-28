@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2026-03-28-01-create-goals-table" author="andrew">
+        <comment>Create goals table</comment>
+
+        <createTable tableName="goals">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint"/>
+            <column name="target_amount" type="decimal(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="current_amount" type="decimal(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deadline" type="date"/>
+            <column name="status" type="varchar(20)"/>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_at" type="timestamp"/>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="goals"
+                baseColumnNames="user_id"
+                constraintName="fk_goals_user"
+                referencedTableName="users"
+                referencedColumnNames="id"/>
+
+    </changeSet>
+</databaseChangeLog>

@@ -53,12 +53,6 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
-    public Category getCategoryById(Long id) {
-        log.info("Получаем категорию, у которой ID = {}", id);
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryValidationException("Категория с ID " + id + " не найдена"));
-    }
-
     @Transactional
     public CategoryResponse createCategory(CreateCategoryRequest request) {
         log.info("Запрос на создание категории: {}", request);

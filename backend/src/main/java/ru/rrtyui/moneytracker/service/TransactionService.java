@@ -20,11 +20,6 @@ import ru.rrtyui.moneytracker.repository.CategoryRepository;
 import ru.rrtyui.moneytracker.repository.TransactionRepository;
 import ru.rrtyui.moneytracker.repository.specification.TransactionSpecifications;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -52,29 +47,6 @@ public class TransactionService {
         log.info("Saved transaction with ID {}", transaction.getId());
 
         return TransactionMapper.toTransactionResponse(saved);
-    }
-
-    //TODO: зачем этот метод, если есть getFilteredTransactions()?
-    public List<TransactionResponse> getAllTransactions(LocalDateTime from, LocalDateTime to, Long categoryId) {
-
-        List<Specification<Transaction>> specs = new ArrayList<>();
-        log.info("Search transactions from {} to {} with categoryId {}", from, to, categoryId);
-
-        if (categoryId != null) {
-            specs.add(TransactionSpecifications.hasCategoryId(categoryId));
-        }
-        if (from != null) {
-            specs.add(TransactionSpecifications.dateAfter(from));
-        }
-        if (to != null) {
-            specs.add(TransactionSpecifications.dateBefore(to));
-        }
-
-        Specification<Transaction> specification = Specification.allOf(specs);
-
-        return transactionRepository.findAll(specification).stream()
-                .map(TransactionMapper::toTransactionResponse)
-                .collect(Collectors.toList());
     }
 
     public Page<TransactionResponse> getFilteredTransactions(TransactionFilterRequest filter, int page, int size) {

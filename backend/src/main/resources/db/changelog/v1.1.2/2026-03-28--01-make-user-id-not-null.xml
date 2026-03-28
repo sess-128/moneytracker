@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2026-03-28-01-make-user-id-not-null" author="andrew">
+        <comment>Make user_id NOT NULL in categories and transactions</comment>
+
+        <!-- Делаем user_id NOT NULL в категориях -->
+        <addNotNullConstraint
+                tableName="categories"
+                columnName="user_id"
+                columnDataType="bigint"/>
+
+        <!-- Делаем user_id NOT NULL в транзакциях -->
+        <addNotNullConstraint
+                tableName="transactions"
+                columnName="user_id"
+                columnDataType="bigint"/>
+
+    </changeSet>
+</databaseChangeLog>
