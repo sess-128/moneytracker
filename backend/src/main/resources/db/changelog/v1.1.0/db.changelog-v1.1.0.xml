@@ -10,5 +10,7 @@
         На этом этапе user_id в категориях и транзакциях ещё нет
     -->
     <include file="2026-03-28--01-create-users-table.xml" relativeToChangelogFile="true"/>
+    <include file="2026-03-28--01-create-goals-table.xml" relativeToChangelogFile="true"/>
+    <include file="2026-03-29--01-add-name-to-goals.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
