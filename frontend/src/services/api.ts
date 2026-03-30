@@ -8,6 +8,28 @@ const api = axios.create({
     headers: { 'Content-Type': 'application/json' },
 });
 
+// Добавляем токен к запросам
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+
+// Обработка 401 ошибок
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const isAuthRequest = error.config?.url?.includes('/auth/');
+        if (error.response?.status === 401 && !isAuthRequest) {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+        }
+        return Promise.reject(error);
+    }
+);
+
 export const transactionApi = {
     getWithFilters: (filters: TransactionFilters, page: number = 0, size: number = 40) => {
         const params = new URLSearchParams();
@@ -72,6 +94,14 @@ export const analyticsApi = {
         if (endDate) params.append('endDate', endDate);
         return api.get<Record<string, number>>(`/analytics/by-category?${params}`);
     },
+};
+
+export const authApi = {
+    signIn: (name: string, password: string) => 
+        api.post<{ token: string }>('/auth/sign-in', { name, password }),
+    
+    signUp: (name: string, email: string, password: string) => 
+        api.post<{ token: string }>('/auth/sign-up', { name, email, password }),
 };
 
 export default api;
