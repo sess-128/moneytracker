@@ -40,6 +40,6 @@ RUN addgroup -g 1001 -S appgroup && adduser -u 1001 -S appuser -G appgroup
 RUN chown -R appuser:appgroup /app
 USER appuser
 
-EXPOSE 8080
+EXPOSE 8000
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
