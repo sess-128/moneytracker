@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/analytics")
+@RequestMapping("/api/analytics")
 @RequiredArgsConstructor
 public class AnalyticsController {
 

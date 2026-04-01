@@ -17,39 +17,39 @@ services:
     networks:
       - mt-network-dev
 
-#  keycloak-dev:
-#    image: keycloak/keycloak:26.3.2
-#    container_name: mt-kc-dev
-#    env_file:
-#      - .env.dev
-#    environment:
-#      KC_DB: ${KC_DB}
-#      KC_DB_DRIVER: ${KC_DB_DRIVER}
-#      KC_DB_USERNAME: ${KC_DB_USERNAME}
-#      KC_DB_PASSWORD: ${KC_DB_PASSWORD}
-#      KC_DB_SCHEMA: ${KC_DB_SCHEMA}
-#      KC_DB_URL: ${KC_DB_URL}
-#      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
-#      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-#    ports:
-#      - "8155:8080"
-#    depends_on:
-#      - db-dev
-#    command:
-#      - start-dev
-#    networks:
-#      - mt-network-dev
+  keycloak-dev:
+    image: keycloak/keycloak:26.3.2
+    container_name: mt-keycloak-dev
+    env_file:
+      - .env.dev
+    environment:
+      KC_DB: ${KC_DB}
+      KC_DB_DRIVER: ${KC_DB_DRIVER}
+      KC_DB_USERNAME: ${KC_DB_USERNAME}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+      KC_DB_SCHEMA: ${KC_DB_SCHEMA}
+      KC_DB_URL: ${KC_DB_URL}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+    ports:
+      - "8155:8080"
+    depends_on:
+      - postgres-dev
+    command:
+      - start-dev
+    networks:
+      - mt-network-dev
 
   backend-dev:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: mt-backend-dev
     restart: unless-stopped
     env_file:
       - .env.dev
     ports:
       - "8081:8000"
-    volumes:
-      - maven-repo:/root/.m2
     environment:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
@@ -82,10 +82,18 @@ services:
     networks:
       - mt-network-dev
 
+  redis:
+    image: redis:7-alpine
+    container_name: mt-redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
 networks:
   mt-network-dev:
     driver: bridge
 
 volumes:
   postgres-dev:
-  maven-repo:
+  redis-data:
