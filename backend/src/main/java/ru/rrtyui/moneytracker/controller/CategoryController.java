@@ -19,7 +19,7 @@ import ru.rrtyui.moneytracker.service.CategoryService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/api/categories")
 @RequiredArgsConstructor
 public class CategoryController {
 

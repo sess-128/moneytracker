@@ -18,6 +18,7 @@ public class CategoryValidator {
      * Проверяет уникальность имени категории внутри родительской группы.
      */
     public void validateUniqueness(String name, Long parentId, Long excludeId) {
+        System.out.println("!");
         if (categoryRepository.existsByNameAndParentId(name, parentId, excludeId)) {
             throw new CategoryValidationException(
                     "Категория с именем '" + name + "' уже существует в выбранной группе"

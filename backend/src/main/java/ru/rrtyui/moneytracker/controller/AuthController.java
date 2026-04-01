@@ -14,7 +14,7 @@ import ru.rrtyui.moneytracker.dto.mtuser.SignUpRequest;
 import ru.rrtyui.moneytracker.service.AuthenticationService;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Tag(name = "Аутентификация")
 public class AuthController {

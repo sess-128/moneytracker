@@ -23,7 +23,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("transactions")
+@RequestMapping("/apitransactions")
 @RequiredArgsConstructor
 public class TransactionalController {
 
