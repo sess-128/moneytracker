@@ -4,6 +4,13 @@ server:
 spring:
   application:
     name: money-tracker
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8155/realms/api-gateway
+
   datasource:
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
