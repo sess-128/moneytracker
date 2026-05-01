@@ -18,9 +18,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -33,7 +30,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Table(name = "users")
-public class MTUser implements UserDetails {
+public class MTUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,13 +70,13 @@ public class MTUser implements UserDetails {
         this.updateAt = LocalDateTime.now();
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
+//    @Override
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        return List.of(new SimpleGrantedAuthority(role.name()));
+//    }
 
-    @Override
-    public String getUsername() {
-        return this.name;
-    }
+//    @Override
+//    public String getUsername() {
+//        return this.name;
+//    }
 }
